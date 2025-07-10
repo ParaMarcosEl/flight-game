@@ -1,56 +1,38 @@
-import React from 'react';
+'use client';
+
+import { useMemo, forwardRef } from 'react';
+import { Line } from '@react-three/drei';
 import * as THREE from 'three';
+import { curve, TUBE_RADIUS } from '../lib/flightPath';
+import { computeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 
-export default function PlayingField() {
-  const size = 1000; // Length/width of the box
-  const height = 500; // Height of the box
-  const halfSize = size / 2;
-  const halfHeight = height / 2;
+// Setup BVH on BufferGeometry and raycasting
+THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
+THREE.Mesh.prototype.raycast = acceleratedRaycast;
 
-  const materialProps = {
-    color: '#0ff',
-    side: THREE.DoubleSide, // DoubleSide
-    transparent: true,
-    opacity: 0.2, // Light see-through look
-  };
+type PlayingFieldProps = {
+  forwardedRef: React.RefObject<THREE.Mesh | null>;
+};
+
+const PlayingField = forwardRef<THREE.Mesh, PlayingFieldProps>(({ forwardedRef }) => {
+  const geometry = useMemo(() => {
+    const tube = new THREE.TubeGeometry(curve, 200, TUBE_RADIUS, 16, true);
+    tube.computeBoundsTree(); // ✅ Compute BVH on geometry
+    return tube;
+  }, []);
+
+  const curvePoints = useMemo(() => curve.getPoints(1000), []);
 
   return (
     <>
-      {/* Floor */}
-      <mesh position={[0, -halfHeight, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[size, size]} />
-        <meshStandardMaterial {...materialProps} color="brown" />
-      </mesh>
-
-      {/* Ceiling */}
-      <mesh position={[0, halfHeight, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[size, size]} />
-        <meshStandardMaterial {...materialProps} color="skyblue"/>
-      </mesh>
-
-      {/* Back Wall */}
-      <mesh position={[0, 0, -halfSize]} rotation={[0, 0, 0]}>
-        <planeGeometry args={[size, height]} />
-        <meshStandardMaterial {...materialProps} color="green" />
-      </mesh>
-
-      {/* Front Wall */}
-      <mesh position={[0, 0, halfSize]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[size, height]} />
-        <meshStandardMaterial {...materialProps} color="darkgreen" />
-      </mesh>
-
-      {/* Left Wall */}
-      <mesh position={[-halfSize, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[size, height]} />
-        <meshStandardMaterial {...materialProps} color="green" />
-      </mesh>
-
-      {/* Right Wall */}
-      <mesh position={[halfSize, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[size, height]} />
-        <meshStandardMaterial {...materialProps} color="darkgreen" />
+      <Line points={curvePoints} color="#00ffff" lineWidth={2} dashed={false} />
+      <mesh ref={forwardedRef} geometry={geometry}>
+        <meshStandardMaterial color="#0055ff" wireframe />
       </mesh>
     </>
   );
-}
+});
+
+PlayingField.displayName = 'PlayingField';
+
+export default PlayingField;

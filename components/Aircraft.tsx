@@ -4,6 +4,7 @@ import { useGLTF } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { MeshBVH } from 'three-mesh-bvh';
 
 const PITCH_INPUT_SPEED = 0.02;
 const ROLL_INPUT_SPEED = 0.03;
@@ -13,6 +14,7 @@ const DEAD_ZONE = 0.1;
 type AircraftProps = {
   aircraftRef: React.RefObject<THREE.Group | null>;
   obstacleRefs: React.RefObject<THREE.Mesh | null>[];
+  playingFieldRef?: React.RefObject<THREE.Mesh | null>;  // <-- Add this optional prop
   maxSpeed?: number;
   acceleration?: number;
   damping?: number;
@@ -21,13 +23,13 @@ type AircraftProps = {
   onBrakingChange?: (state: boolean) => void;
 };
 
-
 export default function Aircraft({
   aircraftRef,
   obstacleRefs,
-  maxSpeed = 3.0,
-  acceleration = 0.001,
-  damping = 1,
+  playingFieldRef,
+  maxSpeed = 2.0,
+  acceleration = 0.1,
+  damping = 0.5,
   onSpeedChange,
   onAcceleratingChange,
   onBrakingChange,
@@ -71,7 +73,7 @@ export default function Aircraft({
     if (keys.current['d']) angularVelocity.current.z -= ROLL_INPUT_SPEED;
     if (keys.current['w']) angularVelocity.current.x -= PITCH_INPUT_SPEED;
     if (keys.current['s']) angularVelocity.current.x += PITCH_INPUT_SPEED;
-    
+
     // Read and normalize input state
     const accelerating = !!(keys.current['i'] || gp?.buttons?.[0]?.pressed);
     const braking = !!(keys.current['k'] || gp?.buttons?.[2]?.pressed);
@@ -95,16 +97,6 @@ export default function Aircraft({
       speedRef.current = Math.max(-1, speedRef.current - acceleration);
     }
 
-    // Notify HUD if acceleration/braking state changes
-    if (onAcceleratingChange && accelerating !== prevState.current.accelerating) {
-      onAcceleratingChange(accelerating);
-      prevState.current.accelerating = accelerating;
-    }
-    if (onBrakingChange && braking !== prevState.current.braking) {
-      onBrakingChange(braking);
-      prevState.current.braking = braking;
-    }
-
     // Update HUD speed
     onSpeedChange?.(speedRef.current);
 
@@ -126,11 +118,40 @@ export default function Aircraft({
     velocity.current.lerp(desiredVelocity, 0.05); // Antigrav inertia
     ship.position.add(velocity.current);
 
-    // --- Bounds ---
-    const bounds = { x: 500, y: 250, z: 500 };
-    ship.position.x = THREE.MathUtils.clamp(ship.position.x, -bounds.x, bounds.x);
-    ship.position.y = THREE.MathUtils.clamp(ship.position.y, -bounds.y, bounds.y);
-    ship.position.z = THREE.MathUtils.clamp(ship.position.z, -bounds.z, bounds.z);
+    // --- Bound player to mesh track using BVH ---
+    if (playingFieldRef?.current) {
+      const playingFieldMesh = playingFieldRef.current;
+      const geometry = playingFieldMesh.geometry as THREE.BufferGeometry & { boundsTree?: MeshBVH };
+
+      // Build BVH if it doesn't exist yet
+      if (!geometry.boundsTree) {
+        geometry.boundsTree = new MeshBVH(geometry);
+      }
+
+      // Raycast down from above player to check if inside tube
+      const raycaster = new THREE.Raycaster();
+      raycaster.firstHitOnly = false; // get all hits
+      raycaster.ray.origin.copy(ship.position).add(new THREE.Vector3(0, 1000, 0));
+      raycaster.ray.direction.set(0, -1, 0);
+
+      const intersects = raycaster.intersectObject(playingFieldMesh, false);
+
+      if (intersects.length === 0) {
+        // Outside bounds — project to nearest point on mesh surface
+        const hitInfo = {
+          point: new THREE.Vector3(),
+          distance: 0,
+          faceIndex: -1,
+        };
+
+        const foundClosest = geometry.boundsTree.closestPointToPoint(ship.position, hitInfo);
+        if (foundClosest) {
+          ship.position.copy(hitInfo.point);
+        }
+        velocity.current.multiplyScalar(-1);
+        speedRef.current = 0;
+      }
+    }
 
     // --- Collision bounce ---
     const shipBox = new THREE.Box3().setFromObject(ship);
@@ -151,7 +172,7 @@ export default function Aircraft({
 
   return (
     <group ref={aircraftRef}>
-      <group rotation={[0, Math.PI, 0]}>
+      <group scale={0.05} rotation={[0, Math.PI, 0]}>
         <primitive object={scene} scale={0.5} />
       </group>
     </group>

@@ -8,11 +8,11 @@ export default function FollowCamera({ targetRef }: { targetRef: React.RefObject
         const target = targetRef.current;
         if (!target) return;
 
-        const offset = new THREE.Vector3(0, 1, 6).applyQuaternion(target.quaternion);
+        const offset = new THREE.Vector3(0, 0, 1).applyQuaternion(target.quaternion);
         const desiredPosition = target.position.clone().add(offset);
 
         // Smooth camera position
-        camera.position.lerp(desiredPosition, 0.3);
+        camera.position.lerp(desiredPosition, 0.9);
 
         camera.quaternion.slerp(target.quaternion, 0.1);
 
