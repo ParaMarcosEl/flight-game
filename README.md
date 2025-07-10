@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Antigravity Flight Game
 
-## Getting Started
+A 3D flight simulator game built with [React Three Fiber](https://github.com/pmndrs/react-three-fiber), supporting full keyboard and gamepad controls, collision detection, and HUD UI.
 
-First, run the development server:
+## ✈️ Features
+
+- Smooth pitch and roll-based flight controls
+- Gamepad (PlayStation-style) support with dead zone handling
+- 360° vertical loops and antigravity-style inertia physics
+- Dynamic camera that follows the aircraft
+- Procedurally generated obstacle field
+- Real-time collision detection with bounce response
+- UI HUD displaying speed, acceleration, braking state, and controls
+
+## 🧩 Tech Stack
+
+- [React](https://react.dev/)
+- [React Three Fiber (R3F)](https://docs.pmnd.rs/react-three-fiber)
+- [Three.js](https://threejs.org/)
+- [Drei](https://github.com/pmndrs/drei) – useful helpers for R3F
+- TypeScript
+
+## 🎮 Controls
+
+| Input      | Action              |
+|------------|---------------------|
+| `W` / `S`  | Pitch Up / Down     |
+| `A` / `D`  | Roll Left / Right   |
+| `I`        | Accelerate          |
+| `K`        | Brake               |
+| Gamepad X  | Accelerate          |
+| Gamepad ☐  | Brake               |
+
+> Controller support uses standard browser Gamepad API. X and Square buttons mapped for PlayStation-style controllers.
+
+## 🧠 Physics Details
+
+- Angular inertia simulated with rotational velocity damping
+- Linear antigravity-style motion using velocity vectors and lerp smoothing
+- Ship bounce on obstacle collision
+- Boundaries enforced via `THREE.MathUtils.clamp`
+
+## 🛠️ Project Structure
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+/components
+├── Aircraft.tsx // Main player logic (input, movement, collisions)
+├── FollowCamera.tsx // Dynamic camera tracking the ship
+├── Obstacle.tsx // Single obstacle with forwardRef
+├── PlayingField.tsx // Scene floor or boundary visuals
+├── HUD.tsx // On-screen UI for flight status
+
+/app/stage
+└── page.tsx // Game stage with Canvas, lights, and scene setup
+/models
+└── spaceship.glb // Your 3D spaceship model
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Getting Started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone the repo:**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/antigravity-flight-game.git
+   cd antigravity-flight-game
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Install Dependencies:**
+    ```bash
+    npm install
+    ```
+    
+3. **Run development server:**
+    ```bash
+    npm run dev
+    ```
+    
+4. **Open in browser:**
+    navigate to http://localhost:3000
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📦 Build for Production
+```bash
+npm run build
+```
