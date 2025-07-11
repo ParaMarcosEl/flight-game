@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useGameStore } from '../../../lib/store';
+import { useGameStore } from '../lib/store';
 
 export default function StageSelect() {
   const router = useRouter();

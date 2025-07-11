@@ -3,14 +3,15 @@
 import { Canvas } from '@react-three/fiber';
 import { useRef, useMemo, useState, createRef } from 'react';
 import * as THREE from 'three';
-import Aircraft from '../../components/Aircraft';
-import PlayingField from '../../components/PlayingField';
-import FollowCamera from '../../components/FollowCamera';
-import Obstacle from '../../components/Obstacle';
-import HUD from '../../components/HUD';
+import Aircraft from '../components/Aircraft';
+import PlayingField from '../components/PlayingField';
+import FollowCamera from '../components/FollowCamera';
+import Obstacle from '../components/Obstacle';
+import HUD from '../components/HUD';
 
 export default function Stage() {
   const aircraftRef = useRef<THREE.Group | null>(null);
+  const playingFieldRef = useRef<THREE.Mesh | null>(null);
 
   const bounds = { x: 500, y: 250, z: 500 };
 
@@ -58,7 +59,7 @@ export default function Stage() {
         <pointLight position={[10, 10, 10]} />
 
         {/* World */}
-        <PlayingField />
+        <PlayingField ref={playingFieldRef} />
         {obstaclePositions.map((pos, i) => (
           <Obstacle key={i} position={pos} ref={obstacleRefs.current[i]} />
         ))}
@@ -67,9 +68,10 @@ export default function Stage() {
         <Aircraft
           aircraftRef={aircraftRef}
           obstacleRefs={obstacleRefs.current}
-          maxSpeed={3.0}
-          acceleration={0.2}
-          damping={0.98}
+          playingFieldRef={playingFieldRef}
+          maxSpeed={2.0}
+          acceleration={0.01}
+          damping={0.1}
           onSpeedChange={setSpeed}
           onAcceleratingChange={setAccelerating}
           onBrakingChange={setBraking}
