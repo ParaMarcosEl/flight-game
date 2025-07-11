@@ -1,14 +1,22 @@
 'use client';
 
 import { CSSProperties } from 'react';
+import { formatTime } from '../utils/FormatLapTime';
+
 
 type PlayerHUDProps = {
   speed: number;
   accelerating: boolean;
   braking: boolean;
+  currentLap: number;
+  currentLapTime: number;
+  lapTimes: number[];
+  stageComplete: boolean;
 };
 
-export default function HUD({ speed, accelerating, braking }: PlayerHUDProps) {
+export default function HUD({ speed, accelerating, braking, currentLap, currentLapTime, lapTimes, stageComplete }: PlayerHUDProps) {
+
+  // TODO: format currentLapTime to 00:00:00 Min:Sec:Milli
   return (
     <div style={hudStyle}>
       <div>🚀 Speed: {(speed * Math.PI * 500).toFixed(2)}</div>
@@ -17,6 +25,12 @@ export default function HUD({ speed, accelerating, braking }: PlayerHUDProps) {
         {braking && '🔽 Braking'}
         {!accelerating && !braking && '🟢 Coasting'}
       </div>
+      <p>Lap: {currentLap} / 3</p>
+      {lapTimes.map((time, i) => (
+        <p key={i}>Lap {i + 1}: {time.toFixed(2)}s</p>
+      ))}
+      <div>Lap Time: {formatTime(currentLapTime)}</div>
+      {stageComplete && <p>🎉 Stage Complete!</p>}
       <hr style={{ borderColor: 'gray' }} />
       <div>Controls:</div>
       <div>W/S - Pitch Up/Down</div>
