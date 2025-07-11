@@ -71,7 +71,7 @@ export default function Stage() {
           playingFieldRef={playingFieldRef}
           maxSpeed={2.0}
           acceleration={0.01}
-          damping={0.001}
+          damping={0.1}
           onSpeedChange={setSpeed}
           onAcceleratingChange={setAccelerating}
           onBrakingChange={setBraking}
