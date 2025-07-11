@@ -59,7 +59,7 @@ export default function Stage() {
         <pointLight position={[10, 10, 10]} />
 
         {/* World */}
-        <PlayingField forwardedRef={playingFieldRef} />
+        <PlayingField ref={playingFieldRef} />
         {obstaclePositions.map((pos, i) => (
           <Obstacle key={i} position={pos} ref={obstacleRefs.current[i]} />
         ))}
@@ -71,7 +71,7 @@ export default function Stage() {
           playingFieldRef={playingFieldRef}
           maxSpeed={2.0}
           acceleration={0.01}
-          damping={0.5}
+          damping={0.001}
           onSpeedChange={setSpeed}
           onAcceleratingChange={setAccelerating}
           onBrakingChange={setBraking}

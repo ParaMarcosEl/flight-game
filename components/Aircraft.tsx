@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { MeshBVH } from 'three-mesh-bvh';
 
-const PITCH_INPUT_SPEED = 0.02;
+const PITCH_INPUT_SPEED = 0.01;
 const ROLL_INPUT_SPEED = 0.03;
 const ANGULAR_DAMPING = 0.5;
 const DEAD_ZONE = 0.1;
