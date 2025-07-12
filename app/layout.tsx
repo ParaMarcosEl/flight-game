@@ -1,4 +1,6 @@
 // app/layout.tsx
+import { GameControllerProvider } from './context/GemeController';
+
 
 export const metadata = {
   title: 'My Flight Game',
@@ -12,7 +14,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <GameControllerProvider>
+        <body>{children}</body>
+      </GameControllerProvider>
     </html>
   );
 }

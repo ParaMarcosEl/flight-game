@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 
 export const TUBE_RADIUS = 30;
+
 const NUM_POINTS = 32; // Number of control points
 const RADIUS = 400;    // Approximate size of loop
 const HEIGHT_VARIATION = 100; // Max vertical offset

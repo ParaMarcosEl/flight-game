@@ -6,15 +6,20 @@ import * as THREE from 'three';
 import Aircraft from '../components/Aircraft';
 import PlayingField from '../components/PlayingField';
 import FollowCamera from '../components/FollowCamera';
-import Obstacle from '../components/Obstacle';
+// import Obstacle from '../components/Obstacle';
 import HUD from '../components/HUD';
+import { getStartPoseFromCurve } from '../utils';
+import { curve } from '../lib/flightPath';
+import { useGameController } from '../context/GemeController';
+
 
 export default function Stage() {
   const aircraftRef = useRef<THREE.Group | null>(null);
   const playingFieldRef = useRef<THREE.Mesh | null>(null);
-
+  const {lapCount} = useGameController();
+  
   const bounds = { x: 500, y: 250, z: 500 };
-
+  
   const obstaclePositions = useMemo(() => {
     const positions: [number, number, number][] = [];
     for (let i = 0; i < 500; i++) {
@@ -32,15 +37,21 @@ export default function Stage() {
     obstacleRefs.current = obstaclePositions.map(() => createRef<THREE.Mesh>());
   }
 
+
   // HUD state
   const [speed, setSpeed] = useState(0);
   const [isAccelerating, setAccelerating] = useState(false);
   const [isBraking, setBraking] = useState(false);
+  const { position: startPosition, quaternion: startQuaternion } = useMemo(
+    () => getStartPoseFromCurve(curve),
+    []
+  );
 
+  
   return (
     <main style={{ width: '100vw', height: '100vh' }}>
       {/* HUD */}
-      <HUD speed={speed} accelerating={isAccelerating} braking={isBraking} />
+      <HUD speed={speed} accelerating={isAccelerating} braking={isBraking} lapCount={lapCount}/>
 
       <Canvas camera={{ position: [0, 5, 15], fov: 60 }}>
         {/* Lighting */}
@@ -59,23 +70,29 @@ export default function Stage() {
         <pointLight position={[10, 10, 10]} />
 
         {/* World */}
-        <PlayingField ref={playingFieldRef} />
-        {obstaclePositions.map((pos, i) => (
+        <PlayingField 
+          ref={playingFieldRef} 
+          aircraftRef={aircraftRef as React.RefObject<THREE.Object3D>} 
+         />
+        {/* {obstaclePositions.map((pos, i) => (
           <Obstacle key={i} position={pos} ref={obstacleRefs.current[i]} />
-        ))}
+        ))} */}
 
         {/* Aircraft */}
         <Aircraft
           aircraftRef={aircraftRef}
           obstacleRefs={obstacleRefs.current}
           playingFieldRef={playingFieldRef}
+          startPosition={startPosition}
+          startQuaternion={startQuaternion}
           maxSpeed={2.0}
           acceleration={0.01}
-          damping={0.1}
+          damping={0.99}
           onSpeedChange={setSpeed}
           onAcceleratingChange={setAccelerating}
           onBrakingChange={setBraking}
         />
+
 
         {/* Camera */}
         <FollowCamera targetRef={aircraftRef} />

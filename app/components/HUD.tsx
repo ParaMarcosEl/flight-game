@@ -6,9 +6,10 @@ type PlayerHUDProps = {
   speed: number;
   accelerating: boolean;
   braking: boolean;
+  lapCount: number;
 };
 
-export default function HUD({ speed, accelerating, braking }: PlayerHUDProps) {
+export default function HUD({ speed, accelerating, braking, lapCount }: PlayerHUDProps) {
   return (
     <div style={hudStyle}>
       <div>🚀 Speed: {(speed * Math.PI * 500).toFixed(2)}</div>
@@ -16,6 +17,9 @@ export default function HUD({ speed, accelerating, braking }: PlayerHUDProps) {
         {accelerating && '🔼 Accelerating'}
         {braking && '🔽 Braking'}
         {!accelerating && !braking && '🟢 Coasting'}
+      </div>
+      <div>
+        Laps: {lapCount}
       </div>
       <hr style={{ borderColor: 'gray' }} />
       <div>Controls:</div>
