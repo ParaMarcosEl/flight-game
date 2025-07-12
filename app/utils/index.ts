@@ -21,25 +21,12 @@ export function getStartPoseFromCurve(
   };
 }
 
-import { useEffect, useRef, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
+export function formatTime(ms: number): string {
+  const minutes = Math.floor(ms / 60000);
+  const seconds = Math.floor((ms % 60000) / 1000);
+  const milliseconds = Math.floor((ms % 1000) / 10); // 2-digit milliseconds
 
-export function useLapTimer(lapCompleteTrigger: boolean) {
-  const [lapTime, setLapTime] = useState(0);
-  const startTime = useRef(performance.now());
+  const pad = (n: number, z = 2) => n.toString().padStart(z, '0');
 
-  useFrame(() => {
-    const now = performance.now();
-    setLapTime((now - startTime.current) / 1000); // seconds
-  });
-
-  useEffect(() => {
-    if (lapCompleteTrigger) {
-      startTime.current = performance.now(); // reset timer
-      setLapTime(0);
-    }
-  }, [lapCompleteTrigger]);
-
-  return lapTime;
+  return `${pad(minutes)}:${pad(seconds)}:${pad(milliseconds)}`;
 }
-

@@ -10,14 +10,11 @@ import FollowCamera from '../components/FollowCamera';
 import HUD from '../components/HUD';
 import { getStartPoseFromCurve } from '../utils';
 import { curve } from '../lib/flightPath';
-import { useGameController } from '../context/GemeController';
 
 
 export default function Stage() {
   const aircraftRef = useRef<THREE.Group | null>(null);
   const playingFieldRef = useRef<THREE.Mesh | null>(null);
-  const {lapCount} = useGameController();
-  
   const bounds = { x: 500, y: 250, z: 500 };
   
   const obstaclePositions = useMemo(() => {
@@ -50,10 +47,10 @@ export default function Stage() {
   
   return (
     <main style={{ width: '100vw', height: '100vh' }}>
-      {/* HUD */}
-      <HUD speed={speed} accelerating={isAccelerating} braking={isBraking} lapCount={lapCount}/>
+      <HUD speed={speed} accelerating={isAccelerating} braking={isBraking} />
 
       <Canvas camera={{ position: [0, 5, 15], fov: 60 }}>
+        {/* HUD */}
         {/* Lighting */}
         <ambientLight intensity={0.4} />
         <directionalLight

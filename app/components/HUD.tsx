@@ -1,15 +1,17 @@
 'use client';
 
 import { CSSProperties } from 'react';
+import { useGameStore } from '../controllers/GameController';
+import { formatTime } from '../utils';
 
 type PlayerHUDProps = {
   speed: number;
   accelerating: boolean;
   braking: boolean;
-  lapCount: number;
 };
 
-export default function HUD({ speed, accelerating, braking, lapCount }: PlayerHUDProps) {
+export default function HUD({ speed, accelerating, braking }: PlayerHUDProps) {
+  const {lapTime, lapCount, lapHistory} = useGameStore((state) => state);
   return (
     <div style={hudStyle}>
       <div>🚀 Speed: {(speed * Math.PI * 500).toFixed(2)}</div>
@@ -18,15 +20,25 @@ export default function HUD({ speed, accelerating, braking, lapCount }: PlayerHU
         {braking && '🔽 Braking'}
         {!accelerating && !braking && '🟢 Coasting'}
       </div>
-      <div>
-        Laps: {lapCount}
+      <hr />
+      <div>Current Lap: {lapCount + 1}{/* Displaying current lap + 1 for user-friendly 1-based indexing */}
+      <div>Lap History:</div>
+      {lapHistory.length === 0 ? (
+          <div>No laps completed yet.</div>
+        ) : (
+          <ol>
+            {lapHistory.map((lap) => (
+              <li key={lap.timestamp}>
+                Lap {lap.lapNumber}: {formatTime(lap.time)}s
+              </li>
+            ))}
+          </ol>
+        )
+      }
       </div>
-      <hr style={{ borderColor: 'gray' }} />
-      <div>Controls:</div>
-      <div>W/S - Pitch Up/Down</div>
-      <div>A/D - Roll Left/Right</div>
-      <div>I / (X on gamepad) - Accelerate</div>
-      <div>K / (Square on gamepad) - Brake</div>
+      <div>
+        Lap Time: {formatTime(lapTime)}
+      </div>
     </div>
   );
 }

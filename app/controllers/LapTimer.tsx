@@ -1,21 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+// controllers/LapTimer.ts
 import { useFrame } from '@react-three/fiber';
+import { useGameStore } from './GameController'; // Assuming GameController is your zustand store file
 
-export function useLapTimer(lapCompleteTrigger: boolean) {
-  const [lapTime, setLapTime] = useState(0);
-  const startTime = useRef(performance.now());
+export function useLapTimer() {
+  const setLapTime = useGameStore((state) => state.setLapTime);
+  const lapStartTime = useGameStore((state) => state.lapStartTime); // Get start time from store
 
   useFrame(() => {
     const now = performance.now();
-    setLapTime((now - startTime.current) / 1000); // seconds
+    setLapTime((now - lapStartTime)); // Update lapTime in the store
   });
-
-  useEffect(() => {
-    if (lapCompleteTrigger) {
-      startTime.current = performance.now(); // reset timer
-      setLapTime(0);
-    }
-  }, [lapCompleteTrigger]);
-
-  return lapTime;
+  // No useEffect with lapCompleteTrigger needed here anymore.
+  // The lapStartTime is managed by the completeLap action in the store.
 }

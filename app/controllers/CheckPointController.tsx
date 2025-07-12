@@ -1,6 +1,8 @@
+// controllers/CheckpointController.ts
 import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
 import * as THREE from 'three';
+import { useGameStore } from './GameController';
 
 type Checkpoint = {
   mesh: THREE.Mesh;
@@ -10,12 +12,15 @@ type Checkpoint = {
 export function useCheckpointController({
   aircraftRef,
   checkpointMeshRef,
+  // onLapComplete is now managed by the store's completeLap action,
+  // so you might not need to pass it here directly if the store handles all lap logic.
+  // We'll keep it for now as an optional external callback.
   onLapComplete,
-  cooldownTime = 5
+  cooldownTime = 2
 }: {
   aircraftRef: React.RefObject<THREE.Object3D>;
   checkpointMeshRef: React.RefObject<THREE.Mesh>;
-  onLapComplete?: () => void;
+  onLapComplete?: () => void; // Optional: for additional effects outside the store
   cooldownTime?: number;
 }) {
   const checkpoint = useRef<Checkpoint>({
@@ -23,16 +28,19 @@ export function useCheckpointController({
     didPass: false
   });
 
+  // Get the completeLap action from your Zustand store
+  const completeLapInStore = useGameStore((state) => state.completeLap);
+
   const cooldown = useRef(0);
-  const clock = new THREE.Clock();
+  const clock = new THREE.Clock(); // Clock for delta time calculation
 
   useFrame(() => {
     const aircraft = aircraftRef.current;
     const checkpointMesh = checkpointMeshRef.current;
     if (!aircraft || !checkpointMesh) return;
 
-    const delta = clock.getDelta();
-    cooldown.current -= delta;
+    const delta = clock.getDelta(); // Get time elapsed since last frame
+    cooldown.current -= delta; // Decrement cooldown
 
     // Compute bounding boxes
     const aircraftBox = new THREE.Box3().setFromObject(aircraft);
@@ -40,23 +48,25 @@ export function useCheckpointController({
 
     // Check for intersection
     if (
-      aircraftBox.intersectsBox(checkpointBox) &&
-      !checkpoint.current.didPass &&
-      cooldown.current <= 0
+      aircraftBox.intersectsBox(checkpointBox) && // Collision detected
+      !checkpoint.current.didPass &&              // Not already passed (within cooldown)
+      cooldown.current <= 0                     // Cooldown has expired
     ) {
-      checkpoint.current.didPass = true;
-      cooldown.current = cooldownTime;
+      checkpoint.current.didPass = true; // Mark as passed
+      cooldown.current = cooldownTime;   // Start cooldown
+      
+      // Trigger the lap completion logic in your Zustand store
+      completeLapInStore(); 
+      
+      // Call the optional external callback if provided
       onLapComplete?.();
-    } else if (!aircraftBox.intersectsBox(checkpointBox)) {
-      // If the aircraft is no longer intersecting, reset didPass immediately
-      // This ensures that even if cooldown.current is still > 0,
-      // a new collision can be registered once the aircraft re-enters.
-      // However, the cooldown logic below might be more appropriate.
-      // For now, let's stick to the cooldown as the primary gate.
     }
 
-    // After the cooldown period, allow the checkpoint to be triggered again
-    if (cooldown.current <= 0 && checkpoint.current.didPass) {
+    // This block is crucial for allowing subsequent triggers.
+    // If the aircraft is *no longer intersecting* AND the cooldown has expired,
+    // then we can allow the checkpoint to be triggered again.
+    // This handles scenarios where the aircraft might briefly re-enter the box.
+    if (!aircraftBox.intersectsBox(checkpointBox) && cooldown.current <= 0 && checkpoint.current.didPass) {
         checkpoint.current.didPass = false;
     }
   });
