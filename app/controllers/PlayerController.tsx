@@ -31,8 +31,9 @@ export function usePlayerController({
   const velocity = useRef(new THREE.Vector3());
   const angularVelocity = useRef(new THREE.Vector3());
   const previousInputState = useRef({ accelerating: false, braking: false });
+  const gamepadIndex = useRef<number | null>(null);
 
-  // Keyboard input
+  // --- Keyboard input ---
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => (keys.current[e.key.toLowerCase()] = true);
     const handleKeyUp = (e: KeyboardEvent) => (keys.current[e.key.toLowerCase()] = false);
@@ -44,31 +45,45 @@ export function usePlayerController({
     };
   }, []);
 
+  // --- Detect first connected gamepad ---
+  useEffect(() => {
+    const handler = (e: GamepadEvent) => {
+      if (gamepadIndex.current === null) {
+        gamepadIndex.current = e.gamepad.index;
+      }
+    };
+    window.addEventListener('gamepadconnected', handler);
+    return () => window.removeEventListener('gamepadconnected', handler);
+  }, []);
+
   useFrame(() => {
     const ship = aircraftRef.current;
     if (!ship) return;
 
-    // --- INPUT CONTROL ---
-
-    const gamepad = navigator.getGamepads?.()[0];
     const DEAD_ZONE = 0.1;
-    let [lx, ly] = gamepad ? gamepad.axes : [0, 0];
-    lx = Math.abs(lx) < DEAD_ZONE ? 0 : lx;
-    ly = Math.abs(ly) < DEAD_ZONE ? 0 : ly;
 
-    // Gamepad or keyboard angular control
+    // --- Gamepad ---
+    const gamepads = navigator.getGamepads?.();
+    const gp = gamepadIndex.current !== null ? gamepads?.[gamepadIndex.current] : gamepads?.[0];
+    let lx = 0, ly = 0;
+
+    if (gp && gp.connected) {
+      lx = Math.abs(gp.axes[0]) > DEAD_ZONE ? gp.axes[0] : 0;
+      ly = Math.abs(gp.axes[1]) > DEAD_ZONE ? gp.axes[1] : 0;
+    }
+
     angularVelocity.current.z += lx * -0.03;
     angularVelocity.current.x += ly * 0.01;
+
+    // --- Keyboard fallback ---
     if (keys.current['a']) angularVelocity.current.z += 0.03;
     if (keys.current['d']) angularVelocity.current.z -= 0.03;
     if (keys.current['w']) angularVelocity.current.x -= 0.01;
     if (keys.current['s']) angularVelocity.current.x += 0.01;
 
-    // Acceleration/braking
-    const accelerating = !!(keys.current['i'] || gamepad?.buttons?.[0]?.pressed);
-    const braking = !!(keys.current['k'] || gamepad?.buttons?.[2]?.pressed);
+    const accelerating = !!(keys.current['i'] || gp?.buttons?.[0]?.pressed);
+    const braking = !!(keys.current['k'] || gp?.buttons?.[2]?.pressed);
 
-    // Trigger input state change callbacks
     if (accelerating !== previousInputState.current.accelerating) {
       onAcceleratingChange?.(accelerating);
       previousInputState.current.accelerating = accelerating;
@@ -79,8 +94,6 @@ export function usePlayerController({
       previousInputState.current.braking = braking;
     }
 
-    // --- SPEED AND VELOCITY ---
-
     if (accelerating) {
       speedRef.current = Math.min(maxSpeed, speedRef.current + acceleration);
     } else if (!braking) {
@@ -90,7 +103,7 @@ export function usePlayerController({
       speedRef.current = Math.max(-1, speedRef.current - acceleration * 1.6);
     }
 
-    // Clamp noise
+    // Clamp low noise
     if (Math.abs(speedRef.current) < 0.001) {
       speedRef.current = 0;
       velocity.current.set(0, 0, 0);
@@ -98,7 +111,7 @@ export function usePlayerController({
 
     onSpeedChange?.(speedRef.current);
 
-    // Apply orientation
+    // --- Apply rotation ---
     const deltaRotation = new THREE.Quaternion().setFromEuler(
       new THREE.Euler(
         angularVelocity.current.x,
@@ -108,23 +121,20 @@ export function usePlayerController({
       )
     );
     ship.quaternion.multiply(deltaRotation);
-    angularVelocity.current.multiplyScalar(0.5); // damp rotation
+    angularVelocity.current.multiplyScalar(0.5);
 
-    // Directional movement
+    // --- Movement ---
     const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(ship.quaternion).normalize();
     const desiredVelocity = forward.multiplyScalar(speedRef.current);
-    const lerpFactor = Math.max(0.05, Math.min(1, Math.abs(speedRef.current))); // responsive lerp
+    const lerpFactor = Math.max(0.05, Math.min(1, Math.abs(speedRef.current)));
     velocity.current.lerp(desiredVelocity, lerpFactor);
     ship.position.add(velocity.current);
 
-    // --- BVH COLLISION ---
-
+    // --- BVH Collision Check ---
     if (playingFieldRef?.current) {
       const field = playingFieldRef.current;
       const geometry = field.geometry as THREE.BufferGeometry & { boundsTree?: MeshBVH };
-      if (!geometry.boundsTree) {
-        geometry.boundsTree = new MeshBVH(geometry);
-      }
+      if (!geometry.boundsTree) geometry.boundsTree = new MeshBVH(geometry);
 
       const raycaster = new THREE.Raycaster();
       raycaster.ray.origin.copy(ship.position).add(new THREE.Vector3(0, 1000, 0));
@@ -145,8 +155,7 @@ export function usePlayerController({
       }
     }
 
-    // --- OBSTACLE COLLISION ---
-
+    // --- Obstacle Collisions ---
     const shipBox = new THREE.Box3().setFromObject(ship);
     for (const obsRef of obstacleRefs) {
       const obs = obsRef.current;

@@ -10,6 +10,7 @@ import FollowCamera from '../components/FollowCamera';
 import HUD from '../components/HUD';
 import { getStartPoseFromCurve } from '../utils';
 import { curve } from '../lib/flightPath';
+import { MAX_SPEED } from '../constants';
 
 
 export default function Stage() {
@@ -37,17 +38,15 @@ export default function Stage() {
 
   // HUD state
   const [speed, setSpeed] = useState(0);
-  const [isAccelerating, setAccelerating] = useState(false);
-  const [isBraking, setBraking] = useState(false);
   const { position: startPosition, quaternion: startQuaternion } = useMemo(
-    () => getStartPoseFromCurve(curve),
+    () => getStartPoseFromCurve(curve, .01),
     []
   );
 
   
   return (
     <main style={{ width: '100vw', height: '100vh' }}>
-      <HUD speed={speed} accelerating={isAccelerating} braking={isBraking} />
+      <HUD speed={speed} />
 
       <Canvas camera={{ position: [0, 5, 15], fov: 60 }}>
         {/* HUD */}
@@ -82,12 +81,10 @@ export default function Stage() {
           playingFieldRef={playingFieldRef}
           startPosition={startPosition}
           startQuaternion={startQuaternion}
-          maxSpeed={2.0}
+          maxSpeed={MAX_SPEED}
           acceleration={0.01}
           damping={0.99}
           onSpeedChange={setSpeed}
-          onAcceleratingChange={setAccelerating}
-          onBrakingChange={setBraking}
         />
 
 

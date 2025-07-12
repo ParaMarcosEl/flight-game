@@ -3,41 +3,39 @@
 import { CSSProperties } from 'react';
 import { useGameStore } from '../controllers/GameController';
 import { formatTime } from '../utils';
+import SpeedMeter from './SpeedMeter';
 
 type PlayerHUDProps = {
   speed: number;
-  accelerating: boolean;
-  braking: boolean;
 };
 
-export default function HUD({ speed, accelerating, braking }: PlayerHUDProps) {
+export default function HUD({ speed }: PlayerHUDProps) {
   const {lapTime, lapCount, lapHistory} = useGameStore((state) => state);
   return (
     <div style={hudStyle}>
-      <div>🚀 Speed: {(speed * Math.PI * 500).toFixed(2)}</div>
+      <div> Speed: {(Math.abs(speed) * Math.PI * 200).toFixed(2)}m/s</div>
       <div>
-        {accelerating && '🔼 Accelerating'}
-        {braking && '🔽 Braking'}
-        {!accelerating && !braking && '🟢 Coasting'}
+        <SpeedMeter speed={Math.abs(speed)} />
       </div>
       <hr />
       <div>Current Lap: {lapCount + 1}{/* Displaying current lap + 1 for user-friendly 1-based indexing */}
+      <div>
+        Current Time: {formatTime(lapTime)}
+      </div>
+      <hr />
       <div>Lap History:</div>
       {lapHistory.length === 0 ? (
           <div>No laps completed yet.</div>
         ) : (
-          <ol>
+          <>
             {lapHistory.map((lap) => (
-              <li key={lap.timestamp}>
+              <div key={lap.timestamp}>
                 Lap {lap.lapNumber}: {formatTime(lap.time)}s
-              </li>
+              </div>
             ))}
-          </ol>
+          </>
         )
       }
-      </div>
-      <div>
-        Lap Time: {formatTime(lapTime)}
       </div>
     </div>
   );

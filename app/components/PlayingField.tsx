@@ -65,7 +65,7 @@ const PlayingField = forwardRef<THREE.Mesh, {
     return (
       <>
         {/* Render checkpoints as translucent spheres with color indication */}
-          <mesh ref={checkpointMeshRef} position={curvePoints[curvePoints.length - 5]} quaternion={quaternion}>
+          <mesh ref={checkpointMeshRef} position={curvePoints[0]} quaternion={quaternion}>
             <cylinderGeometry args={[35, 35, 1]} />
             <meshBasicMaterial
               color={!checkpoint.current.didPass ? 'green' : 'red'}

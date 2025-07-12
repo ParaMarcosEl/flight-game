@@ -16,7 +16,7 @@ export function useCheckpointController({
   // so you might not need to pass it here directly if the store handles all lap logic.
   // We'll keep it for now as an optional external callback.
   onLapComplete,
-  cooldownTime = 2
+  cooldownTime = 1
 }: {
   aircraftRef: React.RefObject<THREE.Object3D>;
   checkpointMeshRef: React.RefObject<THREE.Mesh>;
