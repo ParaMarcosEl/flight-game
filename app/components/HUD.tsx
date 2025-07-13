@@ -10,7 +10,22 @@ type PlayerHUDProps = {
 };
 
 export default function HUD({ speed }: PlayerHUDProps) {
-  const {lapTime, lapCount, lapHistory} = useGameStore((state) => state);
+  const {lapTime, lapCount, lapHistory, raceCompleted, totalTime} = useGameStore((state) => state);
+  const history = <>
+    <div>Lap History:</div>
+    {lapHistory.length === 0 ? (
+        <div>No laps completed yet.</div>
+      ) : (
+        <>
+          {lapHistory.map((lap) => (
+            <div key={lap.timestamp}>
+              Lap {lap.lapNumber}: {formatTime(lap.time)}s
+            </div>
+          ))}
+        </>
+      )
+    }
+  </>;
   return (
     <div style={hudStyle}>
       <div> Speed: {(Math.abs(speed) * Math.PI * 200).toFixed(2)}m/s</div>
@@ -18,25 +33,23 @@ export default function HUD({ speed }: PlayerHUDProps) {
         <SpeedMeter speed={Math.abs(speed)} />
       </div>
       <hr />
-      <div>Current Lap: {lapCount + 1}{/* Displaying current lap + 1 for user-friendly 1-based indexing */}
-      <div>
-        Current Time: {formatTime(lapTime)}
-      </div>
-      <hr />
-      <div>Lap History:</div>
-      {lapHistory.length === 0 ? (
-          <div>No laps completed yet.</div>
-        ) : (
-          <>
-            {lapHistory.map((lap) => (
-              <div key={lap.timestamp}>
-                Lap {lap.lapNumber}: {formatTime(lap.time)}s
-              </div>
-            ))}
+      {raceCompleted 
+        ? <>
+            <div>RACE COMPLETED!</div>
+            <div>Total Time: {formatTime(totalTime)}</div>
+            <hr />
+            {history}
           </>
-        )
+        : <>
+            <div>Current Lap: {lapCount + 1}{/* Displaying current lap + 1 for user-friendly 1-based indexing */}
+              <div>
+                Current Time: {formatTime(lapTime)}
+              </div>
+              <hr />
+              {history}
+            </div>
+          </>
       }
-      </div>
     </div>
   );
 }

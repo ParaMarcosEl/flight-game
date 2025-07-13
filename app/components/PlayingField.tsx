@@ -29,8 +29,11 @@ const PlayingField = forwardRef<THREE.Mesh, {
         aircraftRef, 
         checkpointMeshRef: checkpointMeshRef as React.RefObject<THREE.Mesh>,
         onLapComplete: () => {
-          console.log("Lap Completed");
+          console.log("Lap Completed!");
         },
+        onRaceComplete: () => {
+          console.log("Race Complete!")
+        }
       });
 
     

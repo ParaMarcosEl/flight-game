@@ -20,6 +20,8 @@ type GameSettings = {
 interface GameState {
   lapTime: number; // Current lap's elapsed time
   lapCount: number; // Current lap number (e.g., 1 for the first lap)
+  totalTime: number; // Current lap number (e.g., 1 for the first lap)
+  raceCompleted: boolean;
   lapHistory: SingleLapRecord[]; // History of completed laps
   settings: GameSettings;
   lapStartTime: number; // Timestamp when the current lap began
@@ -33,6 +35,7 @@ interface GameActions {
   incrementLap: () => void; // Keeping this separate if you need to increment without full lap logic
   addLapData: (data: SingleLapRecord) => void; // Changed type to SingleLapRecord
   updateSettings: (newSettings: Partial<GameSettings>) => void;
+  completeRace: () => void;
   reset: () => void;
   setLapStartTime: (time: number) => void;
 }
@@ -49,13 +52,32 @@ const defaultSettings: GameSettings = {
 export const useGameStore = create<GameStore>((set, get) => ({
   // --- Initial State ---
   lapTime: 0,
+  totalTime: 0,
   lapCount: 0, // Starts at 0, first lap completed will make it 1
+  raceCompleted: false,
   lapHistory: [],
   settings: defaultSettings,
   lapStartTime: performance.now(), // Initialize with current time
 
   // --- Actions ---
-  setLapTime: (newTime: number) => set({ lapTime: newTime }),
+  setLapTime: (newTime: number) => {
+    const currentState = get();
+    if (currentState.raceCompleted) return;
+    set(state => {
+      // Calculate the sum of all completed lap times
+      const sumOfCompletedLaps = state.lapHistory.reduce((sum, lap) => sum + lap.time, 0);
+      // totalTime is sum of completed laps + current lapTime
+      const calculatedTotalTime = sumOfCompletedLaps + newTime;
+
+      return {
+        lapTime: newTime,
+        totalTime: calculatedTotalTime // Update totalTime here
+      };
+    });
+  },
+  completeRace() {
+    set({ raceCompleted: true });
+  },
   setLapStartTime: (time: number) => set({ lapStartTime: time }),
 
   completeLap: () => {
@@ -95,6 +117,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({
       lapCount: 0,
       lapHistory: [],
+      raceCompleted: false,
       lapTime: 0,
       lapStartTime: performance.now(), // Reset lap start time on full reset
     });
