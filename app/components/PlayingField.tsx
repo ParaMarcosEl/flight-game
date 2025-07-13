@@ -3,7 +3,8 @@
 import React, { useMemo, forwardRef, useRef } from 'react';
 import { Line, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
-import { curve, TUBE_RADIUS } from '../lib/flightPath';
+import { curve } from '../lib/flightPath';
+import { TUBE_RADIUS } from '../constants';
 import { computeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 import { useCheckpointController } from '../controllers/CheckPointController';
 import { useLapTimer } from '../controllers/LapTimer';
@@ -39,7 +40,7 @@ const PlayingField = forwardRef<THREE.Mesh, {
     
       // Create tube geometry with BVH acceleration
       const geometry = useMemo(() => {
-        const tubeGeometry = new THREE.TubeGeometry(curve, 200, TUBE_RADIUS, 16, true);
+        const tubeGeometry = new THREE.TubeGeometry(curve, 400, TUBE_RADIUS, 16, true);
         tubeGeometry.computeBoundsTree();
         return tubeGeometry;
       }, []);

@@ -1,0 +1,58 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// fsm/RaceState.ts
+import * as THREE from 'three';
+import { BaseState } from '../../lib/StateMachine/BaseState';
+
+export class RaceState implements BaseState {
+  bot: THREE.Object3D;
+  curve: THREE.Curve<THREE.Vector3>;
+  t = 0;
+  speed = 0.0005;
+
+  private time = 0;
+  private noiseAmplitude = 5;
+  private noiseFrequency = 1.5;
+
+  constructor(bot: THREE.Object3D, curve: THREE.Curve<THREE.Vector3>) {
+    this.bot = bot;
+    this.curve = curve;
+  }
+
+  onEnter() {
+    console.log('🏁 Entered Race State');
+  }
+
+  onExit() {
+    console.log('🏁 Exited Race State');
+  }
+
+  handleCollision(other: THREE.Object3D): void {}
+
+  handleInput(): void {}
+
+  handlePhysics(): void {}
+
+  handleTrigger(other: THREE.Object3D): void {}
+
+  handleUpdate(delta: number): void {
+    this.time += delta;
+    this.t = (this.t + this.speed) % 1;
+
+    const pos = this.curve.getPointAt(this.t);
+    const tangent = this.curve.getTangentAt(this.t).normalize();
+
+    // Get a side vector perpendicular to the tangent (right-hand rule)
+    const up = new THREE.Vector3(0, 1, 0);
+    const side = new THREE.Vector3().crossVectors(tangent, up).normalize();
+
+    // Compute oscillating offset
+    const offset = side.multiplyScalar(Math.sin(this.time * this.noiseFrequency) * this.noiseAmplitude);
+    const noisyPos = pos.clone().add(offset);
+
+    // Update bot position and rotation
+    this.bot.position.copy(noisyPos);
+    this.bot.lookAt(noisyPos.clone().add(tangent));
+  }
+
+  onUpdate(delta: number) {}
+}

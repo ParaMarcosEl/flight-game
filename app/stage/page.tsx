@@ -12,6 +12,7 @@ import { getStartPoseFromCurve } from '../utils';
 import { curve } from '../lib/flightPath';
 import { MAX_SPEED } from '../constants';
 import { Skybox } from '../components/Skybox';
+import BotCraft from '../components/Bot/BotCraft';
 
 
 export default function Stage() {
@@ -89,6 +90,8 @@ export default function Stage() {
           onSpeedChange={setSpeed}
         />
 
+        {/* Bot */}
+        <BotCraft startPosition={new THREE.Vector3(startPosition[0], startPosition[1], startPosition[2])} startQuaternion={startQuaternion}/>
 
         {/* Camera */}
         <FollowCamera targetRef={aircraftRef} />

@@ -4,6 +4,7 @@ import { useGLTF } from '@react-three/drei';
 import { useEffect } from 'react';
 import { usePlayerController } from '../controllers/PlayerController';
 import * as THREE from 'three';
+import { SHIP_SCALE } from '../constants';
 
 type AircraftProps = {
   aircraftRef: React.RefObject<THREE.Group | null>;
@@ -56,7 +57,7 @@ export default function Aircraft({
 
   return (
     <group ref={aircraftRef}>
-      <group scale={0.05} rotation={[0, Math.PI, 0]}>
+      <group scale={SHIP_SCALE} rotation={[0, Math.PI, 0]}>
         <primitive object={scene} scale={0.5} />
       </group>
     </group>

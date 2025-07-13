@@ -30,3 +30,12 @@ export function formatTime(ms: number): string {
 
   return `${pad(minutes)}:${pad(seconds)}:${pad(milliseconds)}`;
 }
+
+export function randomNumber(length: number = 10, charset: string = '0123456789'): number {
+  let result = '';
+  const charactersLength = charset.length;
+  for (let i = 0; i < length; i++) {
+    result += charset.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return Number(result);
+}
