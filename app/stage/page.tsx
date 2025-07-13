@@ -11,6 +11,7 @@ import HUD from '../components/HUD';
 import { getStartPoseFromCurve } from '../utils';
 import { curve } from '../lib/flightPath';
 import { MAX_SPEED } from '../constants';
+import { Skybox } from '../components/Skybox';
 
 
 export default function Stage() {
@@ -66,6 +67,7 @@ export default function Stage() {
         <pointLight position={[10, 10, 10]} />
 
         {/* World */}
+        <Skybox />
         <PlayingField 
           ref={playingFieldRef} 
           aircraftRef={aircraftRef as React.RefObject<THREE.Object3D>} 
