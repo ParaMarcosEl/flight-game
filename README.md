@@ -56,8 +56,7 @@ A futuristic 3D racing flight simulator built with [React Three Fiber](https://g
 
 ## 📺 UI & HUD
 
-- Speedometer with current ship speed  
-- Acceleration / braking indicators  
+- Speedometer with current ship speed    
 - Mini-map with curve projection and real-time markers  
 - Lap counter and checkpoint tracking  
 
@@ -109,17 +108,18 @@ npm run dev
 ## 🏁 Roadmap
 
 - ✅ Spline-based race track
+- ✅ Procedural track generation
 - ✅ Player and bot race tracking
 - ✅ Mini-map with 2D projection
 - ✅ Per-lap timers and leaderboard logic
+- 🔲 Visual effects (boost trails, thruster fire, sparks)
+- 🔲 Music & Sound effects (Engines, weapons, UI)
 - 🔲 Multiplayer support (websocket sync)
 - 🔲 Custom spaceship models and upgrades
-- 🔲 Procedural track generation
-- 🔲 Visual effects (boost trails, thruster fire, sparks)
 
 ## 🧠 Inspiration
 Inspired by:
 
 - Wipeout – futuristic aesthetic and high-speed style
 
-- Rocket league – flight mechanics
+- Rocket League – flight  mechanics
