@@ -19,7 +19,7 @@ type MiniMapSvgProps = {
 export default function MiniMapSvg({
   curve,
   playerPos,
-  botPositions,
+  // botPositions,
   svgWidth = 200,
   svgHeight = 200,
   padding = 20,
@@ -98,7 +98,7 @@ export default function MiniMapSvg({
   }, [points, svgWidth, svgHeight, padding]);
 
   const playerMarker = useMemo(() => projectPoint(playerPos), [playerPos, projectPoint]);
-  const botMarkers = useMemo(() => botPositions.map(projectPoint), [botPositions, projectPoint]);
+  // const botMarkers = useMemo(() => botPositions.map(projectPoint), [botPositions, projectPoint]);
 
   return (
     <svg width={svgWidth} height={svgHeight} viewBox={viewBox} style={{ backgroundColor }}>
@@ -116,7 +116,7 @@ export default function MiniMapSvg({
       <circle cx={playerMarker.x} cy={playerMarker.y} r={5} fill="lime" stroke="black" strokeWidth={1} />
 
       {/* Bot Markers */}
-      {botMarkers.map((bot, idx) => (
+      {/* {botMarkers.map((bot, idx) => (
         <circle
           key={idx}
           cx={bot.x}
@@ -126,7 +126,7 @@ export default function MiniMapSvg({
           stroke="black"
           strokeWidth={0.5}
         />
-      ))}
+      ))} */}
     </svg>
   );
 }
