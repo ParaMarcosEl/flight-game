@@ -6,7 +6,7 @@ export const LAP_RADIUS = 400;    // Approximate size of loop
 export const HEIGHT_VARIATION = 100; // Max vertical offset
 export const SEED = Math.random() * Date.now();
 
-export const MAX_SPEED = 3;
+export const MAX_SPEED = 1.5;
 
 export const TUBE_RADIUS = 30;
 export const SHIP_SCALE = 1;
