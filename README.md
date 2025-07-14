@@ -122,4 +122,4 @@ Inspired by:
 
 - Wipeout – futuristic aesthetic and high-speed style
 
-- Rocket Racing – flight mechanics
+- Rocket league – flight mechanics
