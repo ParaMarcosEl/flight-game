@@ -10,6 +10,4 @@ export function useLapTimer() {
     const now = performance.now();
     setLapTime((now - lapStartTime)); // Update lapTime in the store
   });
-  // No useEffect with lapCompleteTrigger needed here anymore.
-  // The lapStartTime is managed by the completeLap action in the store.
 }

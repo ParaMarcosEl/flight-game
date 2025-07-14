@@ -12,12 +12,33 @@ import { getStartPoseFromCurve } from '../utils';
 import { curve } from '../lib/flightPath';
 import { MAX_SPEED } from '../constants';
 import { Skybox } from '../components/Skybox';
+import BotCraft from '../components/Bot/BotCraft';
+import MiniMap from '../components/MiniMap';
+import { useGameStore } from '../controllers/GameController';
+import { useRaceProgress } from '../controllers/RaceProgressController';
+
+function RaceProgressTracker({ playerRef, botRefs }: { 
+  playerRef: React.RefObject<THREE.Object3D>;
+  botRefs: React.RefObject<THREE.Object3D>[];
+}) {
+  useRaceProgress({ playerRef, botRefs });
+  return null; // No rendering, just logic
+}
 
 
 export default function Stage() {
   const aircraftRef = useRef<THREE.Group | null>(null);
   const playingFieldRef = useRef<THREE.Mesh | null>(null);
+  const botRef = useRef<THREE.Object3D | null>(null);
+  const botRef2 = useRef<THREE.Object3D | null>(null);
+  const botRef3 = useRef<THREE.Object3D | null>(null);
+  const botRef4 = useRef<THREE.Object3D | null>(null);
+  const botRef5 = useRef<THREE.Object3D | null>(null);
+  const botRef6 = useRef<THREE.Object3D | null>(null);
+  const botRef7 = useRef<THREE.Object3D | null>(null);
   const bounds = { x: 500, y: 250, z: 500 };
+
+  const { playerPosition, botPositions } = useGameStore(state => state);
   
   const obstaclePositions = useMemo(() => {
     const positions: [number, number, number][] = [];
@@ -47,10 +68,27 @@ export default function Stage() {
   
   return (
     <main style={{ width: '100vw', height: '100vh' }}>
+      {/* UI */}
       <HUD speed={speed} />
+      <MiniMap 
+        playerPosition={playerPosition}
+        botPositions={botPositions}
+      />
 
+      {/* Scene */}
       <Canvas camera={{ position: [0, 5, 15], fov: 60 }}>
-        {/* HUD */}
+        <RaceProgressTracker 
+          playerRef={aircraftRef as React.RefObject<THREE.Object3D>} 
+          botRefs={[
+            botRef as React.RefObject<THREE.Object3D>,
+            botRef2 as React.RefObject<THREE.Object3D>,
+            botRef3 as React.RefObject<THREE.Object3D>,
+            botRef4 as React.RefObject<THREE.Object3D>,
+            botRef5 as React.RefObject<THREE.Object3D>,
+            botRef6 as React.RefObject<THREE.Object3D>,
+            botRef7 as React.RefObject<THREE.Object3D>,
+            ]} 
+          />
         {/* Lighting */}
         <ambientLight intensity={0.4} />
         <directionalLight
@@ -89,6 +127,49 @@ export default function Stage() {
           onSpeedChange={setSpeed}
         />
 
+        {/* Bots */}
+        <BotCraft 
+          ref={botRef as React.RefObject<THREE.Object3D>} 
+          startPosition={new THREE.Vector3(startPosition[0], startPosition[1], startPosition[2])} 
+          startQuaternion={startQuaternion} speed={.0002}
+          curve={curve}
+        />
+        <BotCraft 
+          ref={botRef2 as React.RefObject<THREE.Object3D>} 
+          startPosition={new THREE.Vector3(startPosition[0], startPosition[1], startPosition[2])} 
+          startQuaternion={startQuaternion} speed={.00025}
+          curve={curve}
+        />
+        <BotCraft 
+          ref={botRef3 as React.RefObject<THREE.Object3D>} 
+          startPosition={new THREE.Vector3(startPosition[0], startPosition[1], startPosition[2])} 
+          startQuaternion={startQuaternion} speed={.0003}
+          curve={curve}
+        />
+        <BotCraft 
+          ref={botRef4 as React.RefObject<THREE.Object3D>} 
+          startPosition={new THREE.Vector3(startPosition[0], startPosition[1], startPosition[2])} 
+          startQuaternion={startQuaternion} speed={.00035}
+          curve={curve}
+        />
+        <BotCraft 
+          ref={botRef5 as React.RefObject<THREE.Object3D>} 
+          startPosition={new THREE.Vector3(startPosition[0], startPosition[1], startPosition[2])} 
+          startQuaternion={startQuaternion} speed={.0004}
+          curve={curve}
+        />
+        <BotCraft 
+          ref={botRef6 as React.RefObject<THREE.Object3D>} 
+          startPosition={new THREE.Vector3(startPosition[0], startPosition[1], startPosition[2])} 
+          startQuaternion={startQuaternion} speed={.00045}
+          curve={curve}
+        />
+        <BotCraft 
+          ref={botRef7 as React.RefObject<THREE.Object3D>} 
+          startPosition={new THREE.Vector3(startPosition[0], startPosition[1], startPosition[2])} 
+          startQuaternion={startQuaternion} speed={.0005}
+          curve={curve}
+        />
 
         {/* Camera */}
         <FollowCamera targetRef={aircraftRef} />

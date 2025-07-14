@@ -8,12 +8,12 @@ export function Skybox() {
   const skyboxTexture = useMemo(() => {
     const loader = new THREE.CubeTextureLoader();
     return loader.load([
-        '/textures/skybox/right.png',  // +X
-        '/textures/skybox/left.png',   // -X
-        '/textures/skybox/top.png',    // +Y
-        '/textures/skybox/bottom.png', // -Y
-        '/textures/skybox/front.png',  // +Z
-        '/textures/skybox/back.png',   // -Z
+        '/textures/skybox2/right.png',  // +X
+        '/textures/skybox2/left.png',   // -X
+        '/textures/skybox2/top.png',    // +Y
+        '/textures/skybox2/bottom.png', // -Y
+        '/textures/skybox2/front.png',  // +Z
+        '/textures/skybox2/back.png',   // -Z
     ]);
   }, []);
 
