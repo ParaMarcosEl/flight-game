@@ -96,15 +96,6 @@ public/
 ```
 ---
 
-## 🚀 Getting Started
-
-```bash
-git clone https://github.com/YOUR_USERNAME/antigravity-flight-game.git
-cd antigravity-flight-game
-npm install
-npm run dev
-```
-
 ## 🏁 Roadmap
 
 - ✅ Spline-based race track
