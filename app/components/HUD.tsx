@@ -50,6 +50,12 @@ export default function HUD({ speed }: PlayerHUDProps) {
             </div>
           </>
       }
+      <hr />
+      <div>Controls:</div>
+      <div>Accelerate: I</div>
+      <div>Brake: K</div>
+      <div>Roll right/left: D/A</div>
+      <div>Tilt up/down: S/W</div>
     </div>
   );
 }

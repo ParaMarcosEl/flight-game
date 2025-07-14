@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { useGameStore } from './GameController';
 import { useRef } from 'react';
 
-const UPDATE_INTERVAL_MS = 50;
+const UPDATE_INTERVAL_MS = 200;
 const MAX_DELTA_MS = 200;
 
 
