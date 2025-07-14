@@ -1,5 +1,6 @@
 // stores/useGameStore.ts
 import { create } from 'zustand';
+import * as THREE from 'three';
 
 // --- Type Definitions ---
 // Updated to reflect storing individual lap times
@@ -25,6 +26,8 @@ interface GameState {
   lapHistory: SingleLapRecord[]; // History of completed laps
   settings: GameSettings;
   lapStartTime: number; // Timestamp when the current lap began
+  playerPosition: THREE.Vector3; // player position along curve
+  botPositions: THREE.Vector3[]; // bot positions
 }
 
 // --- Store Actions Interface ---
@@ -38,6 +41,8 @@ interface GameActions {
   completeRace: () => void;
   reset: () => void;
   setLapStartTime: (time: number) => void;
+  setPlayerPosition: (position: THREE.Vector3) => void;
+  setBotPositions: (positions: THREE.Vector3[]) => void;
 }
 
 // --- Combined Store Type ---
@@ -58,8 +63,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
   lapHistory: [],
   settings: defaultSettings,
   lapStartTime: performance.now(), // Initialize with current time
+  playerPosition: new THREE.Vector3(),
+  botPositions: [],
+
 
   // --- Actions ---
+  setPlayerPosition: (pos: THREE.Vector3) => set({ playerPosition: pos }),
+  setBotPositions: (positions: THREE.Vector3[]) => set({ botPositions: positions }),
   setLapTime: (newTime: number) => {
     const currentState = get();
     if (currentState.raceCompleted) return;
@@ -82,6 +92,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   completeLap: () => {
     const currentState = get();
+    if (currentState.raceCompleted) return;
     const now = performance.now();
     const lapDuration = now - currentState.lapStartTime; // Calculate duration of the *completed* lap
 
@@ -102,7 +113,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
   incrementLap: () => {
     set((state) => ({ lapCount: state.lapCount + 1 }));
   },
-
   // This action might become less necessary if completeLap handles all additions.
   // But keeping it if you have other scenarios where you manually add historical data.
   addLapData: (data: SingleLapRecord) => {

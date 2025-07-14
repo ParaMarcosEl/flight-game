@@ -1,41 +1,71 @@
-// components/Bot.tsx
-import { useRef, useEffect } from 'react';
+// components/Bot/BotCraft.tsx
+'use client';
+
+import React, { forwardRef, useImperativeHandle, useRef, useEffect, useMemo } from 'react';
 import * as THREE from 'three';
-import { curve } from '../../lib/flightPath';
-import { useStateMachine } from '../../lib/StateMachine/StateMachine';
-import { IdleState } from './IdleState';
+import { useFrame } from '@react-three/fiber';
 import { RaceState } from './RaceState';
 import { useGLTF } from '@react-three/drei';
 import { SHIP_SCALE } from '../../constants';
 
-export default function Bot({
-  startPosition,
-  startQuaternion,
-}: {
+type BotCraftProps = {
   startPosition: THREE.Vector3;
   startQuaternion: THREE.Quaternion;
-}) {
-  const { scene } = useGLTF('/models/botship.glb');
-  const botRef = useRef<THREE.Object3D>(null);
-  const { setState } = useStateMachine(new IdleState());
-  useEffect(() => {
-    if (botRef.current && startPosition && startQuaternion) {
-      botRef.current.position.set(startPosition.x, startPosition.y, startPosition.z);
-      botRef.current.quaternion.copy(startQuaternion);
-    }
-  }, [startPosition, startQuaternion, botRef]);
+  curve: THREE.Curve<THREE.Vector3>;
+  speed?: number;
+};
 
-  useEffect(() => {
-    if (botRef.current) {
-      setState(new RaceState(botRef.current, curve));
-    }
-  }, []);
+const BotCraft = forwardRef<THREE.Object3D, BotCraftProps>(
+  ({ startPosition, startQuaternion, speed = 0.0005, curve }, ref) => {
+    const botRef = useRef<THREE.Group>(null);
+    const raceStateRef = useRef<RaceState | null>(null);
 
-  return (
-    <group ref={botRef}>
-      <group scale={SHIP_SCALE} rotation={[0, 0, 0]}>
-        <primitive object={scene} scale={0.5} />
+    // Load the GLTF model once
+    const { scene } = useGLTF('/models/botship.glb');
+
+    // Clone the scene for each instance of BotCraft
+    // useMemo ensures this clone happens only when the `scene` object changes
+    // (which it won't after the first load, but it's good practice)
+    const clonedScene = useMemo(() => scene.clone(true), [scene]);
+    // The `true` argument for `clone()` ensures a deep clone, including geometries and materials.
+
+    // Setup initial position & orientation
+    useEffect(() => {
+      if (botRef.current) {
+        botRef.current.position.copy(startPosition);
+        botRef.current.quaternion.copy(startQuaternion);
+      }
+    }, [startPosition, startQuaternion]);
+
+    // Initialize RaceState once
+    useEffect(() => {
+      if (botRef.current) {
+        const raceState = new RaceState(botRef.current, curve);
+        raceState.speed = speed;
+        raceStateRef.current = raceState;
+      }
+    }, [speed, curve]); // Add curve to dependencies if RaceState depends on it
+
+    // Imperative handle for external ref access
+    useImperativeHandle(ref, () => botRef.current as THREE.Object3D, []);
+
+    // Frame update for AI movement
+    useFrame((_, delta) => {
+      if (raceStateRef.current) {
+        raceStateRef.current.handleUpdate(delta);
+      }
+    });
+
+    return (
+      <group ref={botRef}>
+        <group scale={SHIP_SCALE} rotation={[0, 0, 0]}>
+          {/* Use the cloned scene here */}
+          <primitive object={clonedScene} scale={0.5} />
+        </group>
       </group>
-    </group>
-  );
-}
+    );
+  }
+);
+
+BotCraft.displayName = 'BotCraft';
+export default BotCraft;

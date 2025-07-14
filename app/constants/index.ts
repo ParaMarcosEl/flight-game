@@ -18,3 +18,19 @@ export type BotType = {
   lap: number;
   finished: boolean;
 };
+
+export type RacerProgressType = {
+  player: number;
+  bots: number[];
+};
+
+export type SvgMapOptions = {
+        svgWidth: number;
+        svgHeight: number;
+        padding: number;
+        numSegments: number;
+        strokeColor: string;
+        strokeWidth: number;
+        backgroundColor: string;
+    }
+

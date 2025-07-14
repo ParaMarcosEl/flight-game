@@ -13,9 +13,10 @@ export class RaceState implements BaseState {
   private noiseAmplitude = 5;
   private noiseFrequency = 1.5;
 
-  constructor(bot: THREE.Object3D, curve: THREE.Curve<THREE.Vector3>) {
+  constructor(bot: THREE.Object3D, curve: THREE.Curve<THREE.Vector3>, _speed?: number) {
     this.bot = bot;
     this.curve = curve;
+    if (_speed) this.speed = _speed;
   }
 
   onEnter() {
