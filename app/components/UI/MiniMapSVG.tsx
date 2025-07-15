@@ -2,11 +2,13 @@
 
 import React, { useMemo } from 'react';
 import * as THREE from 'three';
+import { useGameStore } from '../../controllers/GameController';
+
+type ProjectPoint = {id: number, isPlayer: boolean, v: THREE.Vector3};
 
 type MiniMapSvgProps = {
   curve: THREE.Curve<THREE.Vector3>;
-  playerPos: THREE.Vector3;
-  botPositions: THREE.Vector3[];
+  positions: ProjectPoint[];
   svgWidth?: number;
   svgHeight?: number;
   padding?: number;
@@ -18,8 +20,7 @@ type MiniMapSvgProps = {
 
 export default function MiniMapSvg({
   curve,
-  playerPos,
-  // botPositions,
+  positions,
   svgWidth = 200,
   svgHeight = 200,
   padding = 20,
@@ -40,7 +41,7 @@ export default function MiniMapSvg({
         pathD: '',
         viewBox: `0 0 ${svgWidth} ${svgHeight}`,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        projectPoint: (_: THREE.Vector3) => ({ x: 0, y: 0 }),
+        projectPoint: (_: ProjectPoint) => ({id: _.id,isPlayer: _.isPlayer, v:{ x: 0, y: 0 }}),
       };
     }
 
@@ -82,12 +83,15 @@ export default function MiniMapSvg({
       })
       .join(' ');
 
-    const projectPoint = (v: THREE.Vector3) => {
-      const iso = isoProject(v);
+    const projectPoint = (point: ProjectPoint) => {
+      const iso = isoProject(point.v);
       return {
+        id: point.id,
+        isPlayer: point.isPlayer,
+        v:{
         x: iso.x * scale + translateX,
         y: iso.y * scale + translateY,
-      };
+      }};
     };
 
     return {
@@ -97,8 +101,7 @@ export default function MiniMapSvg({
     };
   }, [points, svgWidth, svgHeight, padding]);
 
-  const playerMarker = useMemo(() => projectPoint(playerPos), [playerPos, projectPoint]);
-  // const botMarkers = useMemo(() => botPositions.map(projectPoint), [botPositions, projectPoint]);
+  const markers = useMemo(() => positions.map((pos) => ({id: pos.id, isPlayer: pos.isPlayer, v:pos.v})).map(projectPoint), [positions]);
 
   return (
     <svg width={svgWidth} height={svgHeight} viewBox={viewBox} style={{ backgroundColor }}>
@@ -113,20 +116,23 @@ export default function MiniMapSvg({
       />
 
       {/* Player Marker */}
-      <circle cx={playerMarker.x} cy={playerMarker.y} r={5} fill="lime" stroke="black" strokeWidth={1} />
+      {/* <circle cx={playerMarker.x} cy={playerMarker.y} r={5} fill="lime" stroke="black" strokeWidth={1} /> */}
 
       {/* Bot Markers */}
-      {/* {botMarkers.map((bot, idx) => (
+      {markers.map(({id, v}) => {
+        
+        const playerId = useGameStore.getState().playerId;
+        return(
         <circle
-          key={idx}
-          cx={bot.x}
-          cy={bot.y}
+          key={id}
+          cx={v.x}
+          cy={v.y}
           r={4}
-          fill="red"
+          fill={id === playerId ? 'lime' : 'red'}
           stroke="black"
           strokeWidth={0.5}
         />
-      ))} */}
+      )})}
     </svg>
   );
 }

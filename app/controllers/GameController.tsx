@@ -1,135 +1,293 @@
-// stores/useGameStore.ts
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
 import * as THREE from 'three';
+import { RacerProgressType, TOTAL_LAPS } from '../constants';
 
-// --- Type Definitions ---
-// Updated to reflect storing individual lap times
-type SingleLapRecord = {
-  lapNumber: number;
-  time: number; // Duration of this specific lap
-  timestamp: number; // When this lap was completed
-  // You can add more properties here, e.g., 'fastestSectorTimes', 'penalties'
-};
+// --- Helpers ---
+const defaultRaceData = (): RaceData => ({
+  position: new THREE.Vector3(),
+  progress: 0,
+  place: 0,
+  lapCount: 0,
+  isPlayer: false,
+  history: [],
+});
 
-type GameSettings = {
-  soundEnabled: boolean;
-  musicEnabled: boolean;
-  controlScheme: "keyboard" | "gamepad";
-};
-
-// --- Store State Interface ---
-interface GameState {
-  lapTime: number; // Current lap's elapsed time
-  lapCount: number; // Current lap number (e.g., 1 for the first lap)
-  totalTime: number; // Current lap number (e.g., 1 for the first lap)
-  raceCompleted: boolean;
-  lapHistory: SingleLapRecord[]; // History of completed laps
-  settings: GameSettings;
-  lapStartTime: number; // Timestamp when the current lap began
-  playerPosition: THREE.Vector3; // player position along curve
-  botPositions: THREE.Vector3[]; // bot positions
+type RaceData = {
+  position: THREE.Vector3,
+  progress: number,
+  place: number,
+  lapCount: number,
+  isPlayer: boolean,
+  history: LapRecord[],
 }
 
-// --- Store Actions Interface ---
-interface GameActions {
+export type SingleLapRecord = {
+  lapNumber: number;
+  time: number;
+  timestamp: number;
+};
+
+export type GameSettings = {
+  soundEnabled: boolean;
+  musicEnabled: boolean;
+  controlScheme: 'keyboard' | 'gamepad';
+};
+
+export type LapRecord = {
+  lapNumber: number;
+  time: number;
+  timestamp: number;
+};
+
+export type RaceDataType = Record<
+    number,
+    {
+      position: THREE.Vector3;
+      progress: number;
+      place: number;
+      lapCount: number;
+      isPlayer: boolean;
+      history: LapRecord[];
+    }
+  >
+
+type GameState = {
+  lapTime: number;
+  totalTime: number;
+  raceCompleted: boolean;
+  lapHistory: SingleLapRecord[];
+  settings: GameSettings;
+  lapStartTime: number;
+  lastProgresses: Record<number, number>;
+  finishedCrafts: number[]; // just array of ids
+  playerId: number;
+  raceData: Record<
+    number,
+    {
+      position: THREE.Vector3;
+      progress: number;
+      place: number;
+      lapCount: number;
+      isPlayer: boolean;
+      history: LapRecord[];
+    }
+  >;
+};
+
+export type RacePositonsType = { id: number, position: THREE.Vector3 };
+export type RaceProgressesType = { id: number, progress: number };
+
+type GameActions = {
+  setPlayerId: (id: number) => void;
   setLapTime: (time: number) => void;
-  // completeLap will now automatically add to history
-  completeLap: () => void;
-  incrementLap: () => void; // Keeping this separate if you need to increment without full lap logic
-  addLapData: (data: SingleLapRecord) => void; // Changed type to SingleLapRecord
-  updateSettings: (newSettings: Partial<GameSettings>) => void;
+  completeLap: (id: number) => void;
   completeRace: () => void;
   reset: () => void;
   setLapStartTime: (time: number) => void;
-  setPlayerPosition: (position: THREE.Vector3) => void;
-  setBotPositions: (positions: THREE.Vector3[]) => void;
-}
+  setRacePosition: (id: number, pos: THREE.Vector3) => void;
+  setRaceProgress: (id: number, progress: number) => void;
+  updateRaceData: (id: number, updates: Partial<GameState['raceData']>) => void;
+  markFinished: (id: number) => void;
+  updateRacePositions: (positions: RacePositonsType[]) => void;
+  updateProgresses: (positions: RaceProgressesType[]) => void;
+  updateLastProgresses: (progresses: Record<number, number>[]) => void;
+};
 
-// --- Combined Store Type ---
 type GameStore = GameState & GameActions;
 
 const defaultSettings: GameSettings = {
   soundEnabled: true,
   musicEnabled: true,
-  controlScheme: "keyboard",
+  controlScheme: 'keyboard',
 };
 
-export const useGameStore = create<GameStore>((set, get) => ({
-  // --- Initial State ---
+export const useGameStore = create(devtools<GameStore>((set, get) => ({
+  // --- Initial State
   lapTime: 0,
   totalTime: 0,
-  lapCount: 0, // Starts at 0, first lap completed will make it 1
   raceCompleted: false,
   lapHistory: [],
   settings: defaultSettings,
-  lapStartTime: performance.now(), // Initialize with current time
-  playerPosition: new THREE.Vector3(),
-  botPositions: [],
+  lapStartTime: performance.now(),
+  lastProgresses: {},
+  finishedCrafts: [],
+  playerId: -1,
+  raceData: {},
 
+  // --- Actions
+  setPlayerId: (id) => set({ playerId: id }),
 
-  // --- Actions ---
-  setPlayerPosition: (pos: THREE.Vector3) => set({ playerPosition: pos }),
-  setBotPositions: (positions: THREE.Vector3[]) => set({ botPositions: positions }),
-  setLapTime: (newTime: number) => {
-    const currentState = get();
-    if (currentState.raceCompleted) return;
-    set(state => {
-      // Calculate the sum of all completed lap times
-      const sumOfCompletedLaps = state.lapHistory.reduce((sum, lap) => sum + lap.time, 0);
-      // totalTime is sum of completed laps + current lapTime
-      const calculatedTotalTime = sumOfCompletedLaps + newTime;
+  setLapTime: (newTime) => {
+    const { raceCompleted, lapHistory } = get();
+    if (raceCompleted) return;
+
+    const completedTime = lapHistory.reduce((sum, lap) => sum + lap.time, 0);
+    set({
+      lapTime: newTime,
+      totalTime: completedTime + newTime,
+    });
+  },
+
+  completeLap: (id) =>
+    set((state) => {
+      debugger;
+      const now = performance.now();
+      const prev = state.raceData[id] ?? {
+        position: new THREE.Vector3(),
+        progress: 0,
+        place: 0,
+        lapCount: 0,
+        isPlayer: false,
+        history: [],
+      };
+
+      const lapTime = now - (prev.history.at(-1)?.timestamp ?? state.lapStartTime);
+
+      const updatedLap = {
+        lapNumber: prev.lapCount + 1,
+        time: lapTime,
+        timestamp: now,
+      };
+
+      const newHistory = [...prev.history, updatedLap];
 
       return {
-        lapTime: newTime,
-        totalTime: calculatedTotalTime // Update totalTime here
+        raceData: {
+          ...state.raceData,
+          [id]: {
+            ...prev,
+            lapCount: prev.lapCount + 1,
+            history: newHistory,
+          },
+        },
       };
-    });
-  },
-  completeRace() {
-    set({ raceCompleted: true });
-  },
-  setLapStartTime: (time: number) => set({ lapStartTime: time }),
+    }
+  ),
 
-  completeLap: () => {
-    const currentState = get();
-    if (currentState.raceCompleted) return;
-    const now = performance.now();
-    const lapDuration = now - currentState.lapStartTime; // Calculate duration of the *completed* lap
+  completeRace: () => set({ raceCompleted: true }),
 
-    const newLapRecord: SingleLapRecord = {
-      lapNumber: currentState.lapCount + 1, // Store the number of the lap *just completed*
-      time: lapDuration,
-      timestamp: now,
+  reset: () =>
+    set({
+      lapTime: 0,
+      totalTime: 0,
+      raceCompleted: false,
+      lapHistory: [],
+      lapStartTime: performance.now(),
+      finishedCrafts: [],
+      raceData: {},
+      lastProgresses: {},
+    }),
+
+  setLapStartTime: (time) => set({ lapStartTime: time }),
+
+  setRacePosition: (id, position) =>
+    set((state) => ({
+      raceData: {
+        ...state.raceData,
+        [id]: {
+          ...state.raceData[id],
+          position,
+        },
+      },
+    })),
+
+  setRaceProgress: (id, progress) =>
+    set((state) => ({
+      raceData: {
+        ...state.raceData,
+        [id]: {
+          ...state.raceData[id],
+          progress,
+        },
+      }
+    })),
+
+  updateLastProgresses: (progresses: Record<number, number>[]) => {
+    set((state) => {
+      const updatedLastProgresses = { ...state.lastProgresses };
+      progresses.forEach(prog => {
+        Object.entries(prog).forEach(([id, progress]) => {
+          updatedLastProgresses[parseInt(id)] = progress;
+        });
+      })
+      
+      return  { lastProgresses: updatedLastProgresses }
+    })
+  },
+
+  updateRacePositions: (positions) =>
+    set((state) => {
+      const updated = { ...state.raceData };
+      positions.forEach(({ id, position }) => {
+        updated[id] = {
+          ...updated[id] ?? defaultRaceData(),
+          position,
+        };
+      });
+      return { raceData: updated };
+    }),
+
+  updateProgresses: (progresses) =>
+    set((state) => {
+      const updatedRaceData = { ...state.raceData };
+      const lastProgresses = { ...Object.entries(state.raceData)
+        .reduce((prev, [id, { progress}]) => {
+          return {
+            ...prev,
+            [id]: progress
+          };
+        }, {}) };
+
+      progresses.forEach((prog) => {
+        updatedRaceData[prog.id] = {
+          ...updatedRaceData[prog.id] ?? defaultRaceData(),
+          progress: prog.progress,
+        };
+      })
+      return { raceData: updatedRaceData, lastProgresses };
+    }),
+
+  updateRaceData: (id, partialUpdate) =>
+    set((state) => {
+    const existing = state.raceData[id] ?? {
+      position: new THREE.Vector3(),
+      progress: 0,
+      place: 0,
+      lapCount: 0,
+      isPlayer: false,
+      history: [],
     };
 
-    set((state) => ({
-      lapCount: state.lapCount + 1, // Increment lap count for the *next* lap
-      lapHistory: [...state.lapHistory, newLapRecord], // Add the completed lap's data
-      lapTime: 0, // Reset current lap time displayed to 0 for the new lap
-      lapStartTime: now, // Set new start time for the *next* lap
-    }));
-  },
+    return {
+      raceData: {
+        ...state.raceData,
+        [id]: {
+          ...existing,
+          ...partialUpdate,
+        },
+      },
+    };
+  }),
 
-  incrementLap: () => {
-    set((state) => ({ lapCount: state.lapCount + 1 }));
-  },
-  // This action might become less necessary if completeLap handles all additions.
-  // But keeping it if you have other scenarios where you manually add historical data.
-  addLapData: (data: SingleLapRecord) => {
-    set((state) => ({ lapHistory: [...state.lapHistory, data] }));
-  },
+  markFinished: (id) =>
+    set((state) => {
+      const already = state.finishedCrafts.includes(id);
+      if (already) return {};
 
-  updateSettings: (newSettings: Partial<GameSettings>) => {
-    set((state) => ({ settings: { ...state.settings, ...newSettings } }));
-  },
+      const time =
+        state.raceData[id]?.history.reduce((sum, l) => sum + l.time, 0) ?? 0;
 
-  reset: () => {
-    set({
-      lapCount: 0,
-      lapHistory: [],
-      raceCompleted: false,
-      lapTime: 0,
-      lapStartTime: performance.now(), // Reset lap start time on full reset
-    });
-  },
-}));
+      return {
+        finishedCrafts: [...state.finishedCrafts, id],
+        raceData: {
+          ...state.raceData,
+          [id]: {
+            ...state.raceData[id],
+            place: state.finishedCrafts.length + 1,
+          },
+        },
+      };
+    }),
+})));

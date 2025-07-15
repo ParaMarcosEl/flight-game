@@ -1,12 +1,12 @@
-import { curve } from '../lib/flightPath'; // your actual track
+import { curve } from '../../lib/flightPath'; // your actual track
 import { MiniMapWrapper } from './MiniMapWrapper';
 import * as THREE from 'three';
 
-export default function MiniMap({ playerPosition, botPositions }: { playerPosition: THREE.Vector3, botPositions: THREE.Vector3[]}) {
+export default function MiniMap({ positions }: { positions: { id: number, isPlayer: boolean, v: THREE.Vector3}[]}) {
 
   return (
     <div style={mapStyle}>
-        <MiniMapWrapper curve={curve} playerPos={playerPosition} botPositions={botPositions}/>
+        <MiniMapWrapper curve={curve} positions={positions}/>
     </div>
   );
 }

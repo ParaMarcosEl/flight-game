@@ -3,25 +3,26 @@
 import { Canvas } from '@react-three/fiber';
 import { useRef, useMemo, useState, createRef } from 'react';
 import * as THREE from 'three';
-import Aircraft from '../components/Aircraft';
+import Aircraft from '../components/Aircraft/Aircraft';
 import PlayingField from '../components/PlayingField';
 import FollowCamera from '../components/FollowCamera';
 // import Obstacle from '../components/Obstacle';
-import HUD from '../components/HUD';
+import HUD from '../components/UI/HUD';
 import { getStartPoseFromCurve } from '../utils';
 import { curve } from '../lib/flightPath';
 import { MAX_SPEED } from '../constants';
 import { Skybox } from '../components/Skybox';
 import BotCraft from '../components/Bot/BotCraft';
-import MiniMap from '../components/MiniMap';
+import MiniMap from '../components/UI/MiniMap';
 import { useGameStore } from '../controllers/GameController';
 import { useRaceProgress } from '../controllers/RaceProgressController';
+import { StandingsUI } from '../components/UI/StandingsUI';
 
 function RaceProgressTracker({ playerRef, botRefs }: { 
   playerRef: React.RefObject<THREE.Object3D>;
   botRefs: React.RefObject<THREE.Object3D>[];
 }) {
-  useRaceProgress({ playerRef, botRefs });
+  useRaceProgress({ playerRef, playerRefs: botRefs, curve });
   return null; // No rendering, just logic
 }
 
@@ -31,15 +32,19 @@ export default function Stage() {
   const playingFieldRef = useRef<THREE.Mesh | null>(null);
   const botRef = useRef<THREE.Object3D | null>(null);
   const botRef2 = useRef<THREE.Object3D | null>(null);
-  const botRef3 = useRef<THREE.Object3D | null>(null);
-  const botRef4 = useRef<THREE.Object3D | null>(null);
-  const botRef5 = useRef<THREE.Object3D | null>(null);
-  const botRef6 = useRef<THREE.Object3D | null>(null);
-  const botRef7 = useRef<THREE.Object3D | null>(null);
+  // const botRef3 = useRef<THREE.Object3D | null>(null);
+  // const botRef4 = useRef<THREE.Object3D | null>(null);
+  // const botRef5 = useRef<THREE.Object3D | null>(null);
+  // const botRef6 = useRef<THREE.Object3D | null>(null);
+  // const botRef7 = useRef<THREE.Object3D | null>(null);
   const bounds = { x: 500, y: 250, z: 500 };
 
-  const { playerPosition, botPositions } = useGameStore(state => state);
-  
+  const { raceData } = useGameStore(state => state);
+  const positions = Object.entries(raceData).map(([id, player]) => ({
+    isPlayer: player.isPlayer,
+    v: player.position,
+    id: parseInt(id)
+  })).filter((pos) => pos.id >= 0);
   const obstaclePositions = useMemo(() => {
     const positions: [number, number, number][] = [];
     for (let i = 0; i < 500; i++) {
@@ -71,9 +76,9 @@ export default function Stage() {
       {/* UI */}
       <HUD speed={speed} />
       <MiniMap 
-        playerPosition={playerPosition}
-        botPositions={botPositions}
+        positions={positions}
       />
+      <StandingsUI />
 
       {/* Scene */}
       <Canvas camera={{ position: [0, 5, 15], fov: 60 }}>
@@ -82,13 +87,13 @@ export default function Stage() {
           botRefs={[
             botRef as React.RefObject<THREE.Object3D>,
             botRef2 as React.RefObject<THREE.Object3D>,
-            botRef3 as React.RefObject<THREE.Object3D>,
-            botRef4 as React.RefObject<THREE.Object3D>,
-            botRef5 as React.RefObject<THREE.Object3D>,
-            botRef6 as React.RefObject<THREE.Object3D>,
-            botRef7 as React.RefObject<THREE.Object3D>,
-            ]} 
-          />
+            // botRef3 as React.RefObject<THREE.Object3D>,
+            // botRef4 as React.RefObject<THREE.Object3D>,
+            // botRef5 as React.RefObject<THREE.Object3D>,
+            // botRef6 as React.RefObject<THREE.Object3D>,
+            // botRef7 as React.RefObject<THREE.Object3D>,
+          ]} 
+        />
         {/* Lighting */}
         <ambientLight intensity={0.4} />
         <directionalLight
@@ -131,16 +136,16 @@ export default function Stage() {
         <BotCraft 
           ref={botRef as React.RefObject<THREE.Object3D>} 
           startPosition={new THREE.Vector3(startPosition[0], startPosition[1], startPosition[2])} 
-          startQuaternion={startQuaternion} speed={.0002}
+          startQuaternion={startQuaternion} speed={.0005}
           curve={curve}
         />
         <BotCraft 
           ref={botRef2 as React.RefObject<THREE.Object3D>} 
           startPosition={new THREE.Vector3(startPosition[0], startPosition[1], startPosition[2])} 
-          startQuaternion={startQuaternion} speed={.00025}
+          startQuaternion={startQuaternion} speed={.00047}
           curve={curve}
         />
-        <BotCraft 
+        {/* <BotCraft 
           ref={botRef3 as React.RefObject<THREE.Object3D>} 
           startPosition={new THREE.Vector3(startPosition[0], startPosition[1], startPosition[2])} 
           startQuaternion={startQuaternion} speed={.0003}
@@ -169,7 +174,7 @@ export default function Stage() {
           startPosition={new THREE.Vector3(startPosition[0], startPosition[1], startPosition[2])} 
           startQuaternion={startQuaternion} speed={.0005}
           curve={curve}
-        />
+        /> */}
 
         {/* Camera */}
         <FollowCamera targetRef={aircraftRef} />

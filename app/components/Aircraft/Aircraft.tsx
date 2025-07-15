@@ -2,9 +2,9 @@
 
 import { useGLTF } from '@react-three/drei';
 import { useEffect } from 'react';
-import { usePlayerController } from '../controllers/PlayerController';
+import { usePlayerController } from '../../controllers/PlayerController';
 import * as THREE from 'three';
-import { SHIP_SCALE } from '../constants';
+import { SHIP_SCALE } from '../../constants';
 
 type AircraftProps = {
   aircraftRef: React.RefObject<THREE.Group | null>;

@@ -53,6 +53,9 @@ export class RaceState implements BaseState {
     // Update bot position and rotation
     this.bot.position.copy(noisyPos);
     this.bot.lookAt(noisyPos.clone().add(tangent));
+
+    this.bot.userData.curvePosition = pos.clone(); // raw on-curve position
+    this.bot.userData.progress = this.t;
   }
 
   onUpdate(delta: number) {}
