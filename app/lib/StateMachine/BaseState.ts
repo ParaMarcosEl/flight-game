@@ -9,4 +9,3 @@ export abstract class BaseState {
   abstract handleCollision?(other: THREE.Object3D): void;
   abstract handleTrigger?(other: THREE.Object3D): void;
 }
-

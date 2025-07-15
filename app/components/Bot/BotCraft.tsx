@@ -64,7 +64,7 @@ const BotCraft = forwardRef<THREE.Object3D, BotCraftProps>(
         </group>
       </group>
     );
-  }
+  },
 );
 
 BotCraft.displayName = 'BotCraft';

@@ -12,26 +12,16 @@ export class IdleState implements BaseState {
     console.log('➡️ Exiting Idle State');
   }
 
-  handleInput(): void {
-      
-  }
+  handleInput(): void {}
 
-  handleCollision(other: Object3D): void {
-      
-  }
+  handleCollision(other: Object3D): void {}
 
-  handlePhysics(): void {
-      
-  }
+  handlePhysics(): void {}
 
-  handleTrigger(other: Object3D): void {
-      
-  }
+  handleTrigger(other: Object3D): void {}
 
-  handleUpdate(delta: number): void {
-      
-  }
-  
+  handleUpdate(delta: number): void {}
+
   onUpdate(delta: number) {
     // No movement — idle logic
   }

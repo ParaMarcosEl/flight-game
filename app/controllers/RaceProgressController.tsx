@@ -13,7 +13,7 @@ export function useRaceProgress({
   playerRefs,
   curve,
   onLapComplete,
-  onRaceComplete
+  onRaceComplete,
 }: {
   playerRef: React.RefObject<THREE.Object3D>;
   playerRefs: React.RefObject<THREE.Object3D>[];
@@ -21,14 +21,14 @@ export function useRaceProgress({
   onLapComplete?: () => void;
   onRaceComplete?: () => void;
 }) {
-  const { 
-    lastProgresses, 
+  const {
+    lastProgresses,
     playerId,
     setRacePosition,
     updateRacePositions,
     updateProgresses,
-    raceData
-  } = useGameStore(state => state);
+    raceData,
+  } = useGameStore((state) => state);
 
   const elapsedRef = useRef(0);
 
@@ -47,25 +47,27 @@ export function useRaceProgress({
       }
 
       // Update bot positions
-      const botPositions = playerRefs
-        .map((bot, idx) =>( { id: idx, position: bot.current?.userData.curvePosition}))
+      const botPositions = playerRefs.map((bot, idx) => ({
+        id: idx,
+        position: bot.current?.userData.curvePosition,
+      }));
       updateRacePositions(botPositions);
 
       // Compute progress for each bot
-        const botsProgress = playerRefs.map((ref, idx) => {
-            return ({
-                id: idx,
-                isPlayer: false,
-                progress: ref.current?.userData.progress ?? 0
-            })
-        });
+      const botsProgress = playerRefs.map((ref, idx) => {
+        return {
+          id: idx,
+          isPlayer: false,
+          progress: ref.current?.userData.progress ?? 0,
+        };
+      });
 
       // Add player progress with unique ID (e.g., -1 or bots.length)
       const playerProgress = playerRef.current
         ? {
             id: playerRefs.length, // or -1
             isPlayer: true,
-            progress: getProgressAlongCurve(curve, playerRef.current.position)
+            progress: getProgressAlongCurve(curve, playerRef.current.position),
           }
         : null;
 
@@ -85,12 +87,12 @@ export function useRaceProgress({
 
         const crossedFinishLine = last > 0.9 && player.progress < 0.1;
         if (crossedFinishLine) {
-          useGameStore.getState().completeLap(Number(id)); 
-          onLapComplete?.()
+          useGameStore.getState().completeLap(Number(id));
+          onLapComplete?.();
 
-          if(player.isPlayer && player.lapCount >= TOTAL_LAPS) {
+          if (player.isPlayer && player.lapCount >= TOTAL_LAPS) {
             useGameStore.getState().completeRace();
-            onRaceComplete?.()
+            onRaceComplete?.();
           }
         }
       });

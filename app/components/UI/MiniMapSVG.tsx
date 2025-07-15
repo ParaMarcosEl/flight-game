@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 import * as THREE from 'three';
 import { useGameStore } from '../../controllers/GameController';
 
-type ProjectPoint = {id: number, isPlayer: boolean, v: THREE.Vector3};
+type ProjectPoint = { id: number; isPlayer: boolean; v: THREE.Vector3 };
 
 type MiniMapSvgProps = {
   curve: THREE.Curve<THREE.Vector3>;
@@ -31,17 +31,13 @@ export default function MiniMapSvg({
 }: MiniMapSvgProps) {
   const points = useMemo(() => curve.getPoints(numSegments), [curve, numSegments]);
 
-  const {
-    pathD,
-    viewBox,
-    projectPoint,
-  } = useMemo(() => {
+  const { pathD, viewBox, projectPoint } = useMemo(() => {
     if (points.length === 0) {
       return {
         pathD: '',
         viewBox: `0 0 ${svgWidth} ${svgHeight}`,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        projectPoint: (_: ProjectPoint) => ({id: _.id,isPlayer: _.isPlayer, v:{ x: 0, y: 0 }}),
+        projectPoint: (_: ProjectPoint) => ({ id: _.id, isPlayer: _.isPlayer, v: { x: 0, y: 0 } }),
       };
     }
 
@@ -55,8 +51,10 @@ export default function MiniMapSvg({
 
     const projected = points.map(isoProject);
 
-    let minX = Infinity, maxX = -Infinity;
-    let minY = Infinity, maxY = -Infinity;
+    let minX = Infinity,
+      maxX = -Infinity;
+    let minY = Infinity,
+      maxY = -Infinity;
     for (const p of projected) {
       minX = Math.min(minX, p.x);
       maxX = Math.max(maxX, p.x);
@@ -88,10 +86,11 @@ export default function MiniMapSvg({
       return {
         id: point.id,
         isPlayer: point.isPlayer,
-        v:{
-        x: iso.x * scale + translateX,
-        y: iso.y * scale + translateY,
-      }};
+        v: {
+          x: iso.x * scale + translateX,
+          y: iso.y * scale + translateY,
+        },
+      };
     };
 
     return {
@@ -101,7 +100,11 @@ export default function MiniMapSvg({
     };
   }, [points, svgWidth, svgHeight, padding]);
 
-  const markers = useMemo(() => positions.map((pos) => ({id: pos.id, isPlayer: pos.isPlayer, v:pos.v})).map(projectPoint), [positions]);
+  const markers = useMemo(
+    () =>
+      positions.map((pos) => ({ id: pos.id, isPlayer: pos.isPlayer, v: pos.v })).map(projectPoint),
+    [positions],
+  );
 
   return (
     <svg width={svgWidth} height={svgHeight} viewBox={viewBox} style={{ backgroundColor }}>
@@ -119,20 +122,20 @@ export default function MiniMapSvg({
       {/* <circle cx={playerMarker.x} cy={playerMarker.y} r={5} fill="lime" stroke="black" strokeWidth={1} /> */}
 
       {/* Bot Markers */}
-      {markers.map(({id, v}) => {
-        
+      {markers.map(({ id, v }) => {
         const playerId = useGameStore.getState().playerId;
-        return(
-        <circle
-          key={id}
-          cx={v.x}
-          cy={v.y}
-          r={4}
-          fill={id === playerId ? 'lime' : 'red'}
-          stroke="black"
-          strokeWidth={0.5}
-        />
-      )})}
+        return (
+          <circle
+            key={id}
+            cx={v.x}
+            cy={v.y}
+            r={4}
+            fill={id === playerId ? 'lime' : 'red'}
+            stroke="black"
+            strokeWidth={0.5}
+          />
+        );
+      })}
     </svg>
   );
 }

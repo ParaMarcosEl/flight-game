@@ -65,7 +65,8 @@ export function usePlayerController({
     // --- Gamepad ---
     const gamepads = navigator.getGamepads?.();
     const gp = gamepadIndex.current !== null ? gamepads?.[gamepadIndex.current] : gamepads?.[0];
-    let lx = 0, ly = 0;
+    let lx = 0,
+      ly = 0;
 
     if (gp && gp.connected) {
       lx = Math.abs(gp.axes[0]) > DEAD_ZONE ? gp.axes[0] : 0;
@@ -117,8 +118,8 @@ export function usePlayerController({
         angularVelocity.current.x,
         angularVelocity.current.y,
         angularVelocity.current.z,
-        'XYZ'
-      )
+        'XYZ',
+      ),
     );
     ship.quaternion.multiply(deltaRotation);
     angularVelocity.current.multiplyScalar(0.5);

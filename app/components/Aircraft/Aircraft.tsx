@@ -9,7 +9,7 @@ import { SHIP_SCALE } from '../../constants';
 type AircraftProps = {
   aircraftRef: React.RefObject<THREE.Group | null>;
   obstacleRefs: React.RefObject<THREE.Mesh | null>[];
-  playingFieldRef?: React.RefObject<THREE.Mesh | null>;  // <-- Add this optional prop
+  playingFieldRef?: React.RefObject<THREE.Mesh | null>; // <-- Add this optional prop
   maxSpeed?: number;
   acceleration?: number;
   damping?: number;
@@ -24,14 +24,14 @@ export default function Aircraft({
   aircraftRef,
   startPosition,
   startQuaternion,
-  obstacleRefs, 
-  playingFieldRef, 
-  maxSpeed, 
-  acceleration, 
-  damping, 
-  onSpeedChange, 
-  onAcceleratingChange, 
-  onBrakingChange
+  obstacleRefs,
+  playingFieldRef,
+  maxSpeed,
+  acceleration,
+  damping,
+  onSpeedChange,
+  onAcceleratingChange,
+  onBrakingChange,
 }: AircraftProps) {
   const { scene } = useGLTF('/models/spaceship.glb');
 
@@ -42,17 +42,16 @@ export default function Aircraft({
     }
   }, [startPosition, startQuaternion, aircraftRef]);
 
-
   usePlayerController({
-    aircraftRef, 
-    obstacleRefs, 
-    playingFieldRef, 
-    maxSpeed, 
-    acceleration, 
-    damping, 
-    onSpeedChange, 
-    onAcceleratingChange, 
-    onBrakingChange
+    aircraftRef,
+    obstacleRefs,
+    playingFieldRef,
+    maxSpeed,
+    acceleration,
+    damping,
+    onSpeedChange,
+    onAcceleratingChange,
+    onBrakingChange,
   });
 
   return (

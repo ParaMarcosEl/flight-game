@@ -11,7 +11,7 @@ type Checkpoint = {
 export function useCheckpointController({
   aircraftRef,
   checkpointMeshRef,
-  cooldownTime = 2
+  cooldownTime = 2,
 }: {
   aircraftRef: React.RefObject<THREE.Object3D>;
   checkpointMeshRef: React.RefObject<THREE.Mesh>;
@@ -19,7 +19,7 @@ export function useCheckpointController({
 }) {
   const checkpoint = useRef<Checkpoint>({
     mesh: checkpointMeshRef.current as THREE.Mesh,
-    didPass: false
+    didPass: false,
   });
 
   const cooldown = useRef(0);
@@ -52,7 +52,6 @@ export function useCheckpointController({
       checkpoint.current.didPass = false;
     }
   });
-
 
   return checkpoint;
 }

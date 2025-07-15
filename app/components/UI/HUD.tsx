@@ -6,51 +6,46 @@ import SpeedMeter from '../SpeedMeter';
 import { CSSProperties } from 'react';
 
 export default function HUD({ speed }: { speed: number }) {
-  const {
-    lapTime,
-    raceCompleted,
-    totalTime,
-    raceData,
-    playerId
-  } = useGameStore((state) => { return state });
+  const { lapTime, raceCompleted, totalTime, raceData, playerId } = useGameStore((state) => {
+    return state;
+  });
 
   const { finished, inProgress } = useRaceStandings();
 
-  const playerHistory = raceData[playerId]?.history  || [];
+  const playerHistory = raceData[playerId]?.history || [];
 
-  const history = playerHistory.length === 0 ? (
-    <>
-      <hr />
-      <div>Lap History:</div>
+  const history =
+    playerHistory.length === 0 ? (
+      <>
+        <hr />
+        <div>Lap History:</div>
         <div>No laps completed.</div>
-        </>
-      ) : (
-        <>
-       { 
-          playerHistory.map((lap) => (
-            <div key={lap.timestamp}>
-              Lap {lap.lapNumber}: {formatTime(lap.time)}s
-            </div>
-          ))
-        }
-    </>);
+      </>
+    ) : (
+      <>
+        {playerHistory.map((lap) => (
+          <div key={lap.timestamp}>
+            Lap {lap.lapNumber}: {formatTime(lap.time)}s
+          </div>
+        ))}
+      </>
+    );
 
   const standingsUI = (
     <>
-      <hr/>
+      <hr />
       <div>🏁 Standings:</div>
-        <ol>
-          {finished.map((player) => {
-            const time = raceData[player.id].history.reduce((prev, curr) => curr.time + prev, 0);
-            return (
+      <ol>
+        {finished.map((player) => {
+          const time = raceData[player.id].history.reduce((prev, curr) => curr.time + prev, 0);
+          return (
             <li key={player.id}>
-              #{player.place} Place – {player.id === playerId ? 'You' : `Bot ${player.id}`}, Time: {formatTime(time)}
+              #{player.place} Place – {player.id === playerId ? 'You' : `Bot ${player.id}`}, Time:{' '}
+              {formatTime(time)}
             </li>
-          )})}
-        </ol>
-        <div>
-          {JSON.stringify(inProgress, null, 2)}
-        </div>
+          );
+        })}
+      </ol>
     </>
   );
 
@@ -75,13 +70,12 @@ export default function HUD({ speed }: { speed: number }) {
       )}
 
       <hr />
-      {standingsUI}
-      {/* <hr />
+      <hr />
       <div>Controls:</div>
       <div>Accelerate: I</div>
       <div>Brake: K</div>
       <div>Roll: A/D</div>
-      <div>Pitch: W/S</div> */}
+      <div>Pitch: W/S</div>
     </div>
   );
 }
@@ -99,4 +93,3 @@ const hudStyle: CSSProperties = {
   pointerEvents: 'none',
   zIndex: 10,
 };
-

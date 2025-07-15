@@ -6,28 +6,28 @@ A futuristic 3D racing flight simulator built with [React Three Fiber](https://g
 
 ## ✈️ Features
 
-- 🌀 **Full 3D antigravity flight** with pitch, roll, and free motion  
-- 🎮 **Keyboard & Gamepad support** (PlayStation-style mapping)  
-- 🤖 **AI Bot Racers** that follow the same track  
-- 🧭 **Checkpoint & Lap Tracking** using spline-based progress  
-- 🗺️ **Mini-map HUD** with player and bot overlays  
-- 🎥 **Dynamic follow camera** with smooth motion  
-- 💥 **Real-time collisions** and bounce physics  
-- 🧠 **Inertia-based flight physics** (damped velocity & rotation)  
-- ⚙️ **Modular controllers** for aircraft, camera, game state, and race logic  
+- 🌀 **Full 3D antigravity flight** with pitch, roll, and free motion
+- 🎮 **Keyboard & Gamepad support** (PlayStation-style mapping)
+- 🤖 **AI Bot Racers** that follow the same track
+- 🧭 **Checkpoint & Lap Tracking** using spline-based progress
+- 🗺️ **Mini-map HUD** with player and bot overlays
+- 🎥 **Dynamic follow camera** with smooth motion
+- 💥 **Real-time collisions** and bounce physics
+- 🧠 **Inertia-based flight physics** (damped velocity & rotation)
+- ⚙️ **Modular controllers** for aircraft, camera, game state, and race logic
 
 ---
 
 ## 🧩 Tech Stack
 
-| Library            | Purpose                              |
-|--------------------|--------------------------------------|
-| React              | UI framework                         |
-| React Three Fiber  | Three.js bindings for React          |
-| Three.js           | 3D rendering engine                  |
-| Zustand            | Global game state management         |
-| Drei               | R3F helpers (e.g., `useGLTF`, `PerspectiveCamera`) |
-| TypeScript         | Type safety and clarity              |
+| Library           | Purpose                                            |
+| ----------------- | -------------------------------------------------- |
+| React             | UI framework                                       |
+| React Three Fiber | Three.js bindings for React                        |
+| Three.js          | 3D rendering engine                                |
+| Zustand           | Global game state management                       |
+| Drei              | R3F helpers (e.g., `useGLTF`, `PerspectiveCamera`) |
+| TypeScript        | Type safety and clarity                            |
 
 ---
 
@@ -35,8 +35,8 @@ A futuristic 3D racing flight simulator built with [React Three Fiber](https://g
 
 ### Keyboard
 
-| Key     | Action             |
-|---------|--------------------|
+| Key       | Action            |
+| --------- | ----------------- |
 | `W` / `S` | Pitch Up / Down   |
 | `A` / `D` | Roll Left / Right |
 | `I`       | Accelerate        |
@@ -44,10 +44,10 @@ A futuristic 3D racing flight simulator built with [React Three Fiber](https://g
 
 ### Gamepad (PlayStation-style)
 
-| Button   | Action     |
-|----------|------------|
-| `X`      | Accelerate |
-| `Square` | Brake      |
+| Button     | Action     |
+| ---------- | ---------- |
+| `X`        | Accelerate |
+| `Square`   | Brake      |
 | Left Stick | Pitch/Roll |
 
 > Gamepad support uses the [Gamepad API](https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API)
@@ -56,22 +56,23 @@ A futuristic 3D racing flight simulator built with [React Three Fiber](https://g
 
 ## 📺 UI & HUD
 
-- Speedometer with current ship speed    
-- Mini-map with curve projection and real-time markers  
-- Lap counter and checkpoint tracking  
+- Speedometer with current ship speed
+- Mini-map with curve projection and real-time markers
+- Lap counter and checkpoint tracking
 
 ---
 
 ## 🧠 Physics
 
-- Rotational damping for realistic flight inertia  
-- Linear motion with velocity smoothing  
-- Curve clamping and bounce response on collision  
-- Spline-based progression system for position tracking  
+- Rotational damping for realistic flight inertia
+- Linear motion with velocity smoothing
+- Curve clamping and bounce response on collision
+- Spline-based progression system for position tracking
 
 ---
 
 ## 📁 Project Structure
+
 ```bash
 /components
 ├── Aircraft.tsx # Player controller
@@ -94,6 +95,7 @@ A futuristic 3D racing flight simulator built with [React Three Fiber](https://g
 public/
 └── models/spaceship.glb # Placeholder for 3D models
 ```
+
 ---
 
 ## 🏁 Roadmap
@@ -109,8 +111,9 @@ public/
 - 🔲 Custom spaceship models and upgrades
 
 ## 🧠 Inspiration
+
 Inspired by:
 
 - Wipeout – futuristic aesthetic and high-speed style
 
-- Rocket League – flight  mechanics
+- Rocket League – flight mechanics

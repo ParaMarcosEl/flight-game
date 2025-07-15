@@ -6,11 +6,11 @@ import * as THREE from 'three';
 
 type Props = {
   curve: THREE.Curve<THREE.Vector3>;
-  positions: { id: number, isPlayer: boolean, v: THREE.Vector3}[]
+  positions: { id: number; isPlayer: boolean; v: THREE.Vector3 }[];
 };
 
 export function MiniMapWrapper({ curve, positions }: Props) {
-  const playerPositions = positions.filter(pos => pos.v instanceof THREE.Vector3);
+  const playerPositions = positions.filter((pos) => pos.v instanceof THREE.Vector3);
   const [ready, setReady] = useState(false);
   useEffect(() => setReady(true), []);
   if (!ready) return null;

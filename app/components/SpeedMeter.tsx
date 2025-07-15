@@ -9,7 +9,6 @@ type SpeedMeterProps = {
 };
 
 export default function SpeedMeter({ speed }: SpeedMeterProps) {
-    
   const speedPercent = Math.min(speed / MAX_SPEED, 1);
 
   return (

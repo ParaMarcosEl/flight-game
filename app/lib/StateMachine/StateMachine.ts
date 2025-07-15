@@ -6,7 +6,7 @@ export function useStateMachine(initialState: BaseState) {
   const currentState = useRef<BaseState>(initialState);
 
   const setState = (newState: BaseState) => {
-  if (currentState.current === newState) return;
+    if (currentState.current === newState) return;
     currentState.current?.onExit();
     currentState.current = newState;
     currentState.current.onEnter();
