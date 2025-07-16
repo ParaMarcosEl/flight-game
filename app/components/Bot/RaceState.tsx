@@ -47,12 +47,17 @@ export class RaceState implements BaseState {
     const side = new THREE.Vector3().crossVectors(tangent, up).normalize();
 
     // Compute oscillating offset
-    const offset = side.multiplyScalar(Math.sin(this.time * this.noiseFrequency) * this.noiseAmplitude);
+    const offset = side.multiplyScalar(
+      Math.sin(this.time * this.noiseFrequency) * this.noiseAmplitude,
+    );
     const noisyPos = pos.clone().add(offset);
 
     // Update bot position and rotation
     this.bot.position.copy(noisyPos);
     this.bot.lookAt(noisyPos.clone().add(tangent));
+
+    this.bot.userData.curvePosition = pos.clone(); // raw on-curve position
+    this.bot.userData.progress = this.t;
   }
 
   onUpdate(delta: number) {}

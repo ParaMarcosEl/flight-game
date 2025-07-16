@@ -1,18 +1,15 @@
 // app/layout.tsx
+import './globals.css';
 
 export const metadata = {
   title: 'My Flight Game',
   description: 'A flight game with React Three Fiber',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-        <body>{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

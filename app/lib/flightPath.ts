@@ -4,7 +4,7 @@ import { NUM_POINTS, LAP_RADIUS, SEED, HEIGHT_VARIATION } from '../constants';
 
 function generateLoopPoints(num_pts?: number): THREE.Vector3[] {
   const points: THREE.Vector3[] = [];
-    const pointCount = num_pts || NUM_POINTS;
+  const pointCount = num_pts || NUM_POINTS;
   for (let i = 0; i < pointCount; i++) {
     const angle = (i / pointCount) * Math.PI * 2;
 

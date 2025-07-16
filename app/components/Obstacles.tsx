@@ -3,14 +3,19 @@ import { useMemo } from 'react';
 import * as THREE from 'three';
 import Obstacle from './Obstacle';
 
-export default function Obstacles({ obstacleRefs }: { obstacleRefs: React.RefObject<THREE.Mesh>[] }) {
+export default function Obstacles({
+  obstacleRefs,
+}: {
+  obstacleRefs: React.RefObject<THREE.Mesh>[];
+}) {
   const positions = useMemo(
-    () => [
-      [10, 0, -20],
-      [-5, 2, -30],
-      [0, -3, -50],
-    ] as [number, number, number][],
-    []
+    () =>
+      [
+        [10, 0, -20],
+        [-5, 2, -30],
+        [0, -3, -50],
+      ] as [number, number, number][],
+    [],
   );
 
   return (

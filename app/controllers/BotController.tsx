@@ -16,45 +16,41 @@ export function useBotController({
   botRef,
   curve,
   speed = 0.003,
-  onCheckpointPass,
   noiseAmplitude = 2,
   noiseFrequency = 2,
 }: BotControllerProps) {
   const t = useRef(0);
   const clock = useRef(new THREE.Clock());
-  const prevCheckpointIndex = useRef(-1);
 
   useFrame(() => {
     const bot = botRef.current;
     if (!bot) return;
 
-    // const delta = clock.current.getDelta();
     t.current = (t.current + speed) % 1;
 
-    // Base path position and direction
+    // Base position and tangent (forward direction)
     const position = curve.getPointAt(t.current);
     const tangent = curve.getTangentAt(t.current).normalize();
 
-    // Create lateral noise perpendicular to the curve
-    const normal = new THREE.Vector3(0, 1, 0); // Arbitrary up vector
-    const side = new THREE.Vector3().crossVectors(tangent, normal).normalize();
+    // Create lateral noise (oscillates left/right from the path)
+    const up = new THREE.Vector3(0, 1, 0); // Arbitrary up
+    const side = new THREE.Vector3().crossVectors(tangent, up).normalize();
 
-    // Add oscillation or jitter along the side vector
-    const time = clock.current.elapsedTime;
-    const offsetStrength = Math.sin(time * noiseFrequency) * noiseAmplitude;
+    const time = clock.current.getElapsedTime();
+    const offset = Math.sin(time * noiseFrequency) * noiseAmplitude;
+    const noisyPosition = position.clone().add(side.multiplyScalar(offset));
 
-    const noisyPosition = position.clone().add(side.multiplyScalar(offsetStrength));
+    // Update bot position
     bot.position.copy(noisyPosition);
 
-    // Look toward the next point on the curve (with the same noise offset)
-    const lookAt = curve.getPointAt((t.current + 0.01) % 1);
-    bot.lookAt(lookAt);
+    // Aircraft-style orientation (banking + forward-facing)
+    const right = side;
+    const trueUp = new THREE.Vector3().crossVectors(tangent, right).normalize();
 
-    // Checkpoint callback
-    const checkpointIndex = Math.floor(t.current * 20); // assuming 20 checkpoints
-    if (checkpointIndex !== prevCheckpointIndex.current) {
-      prevCheckpointIndex.current = checkpointIndex;
-      onCheckpointPass?.(checkpointIndex);
-    }
+    const rotationMatrix = new THREE.Matrix4().makeBasis(right, trueUp, tangent);
+    bot.quaternion.slerp(
+      new THREE.Quaternion().setFromRotationMatrix(rotationMatrix),
+      0.2 // adjust for smoothness
+    );
   });
 }

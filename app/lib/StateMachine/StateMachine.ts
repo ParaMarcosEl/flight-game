@@ -6,10 +6,14 @@ export function useStateMachine(initialState: BaseState) {
   const currentState = useRef<BaseState>(initialState);
 
   const setState = (newState: BaseState) => {
-  if (currentState.current === newState) return;
+    if (currentState.current === newState) return;
     currentState.current?.onExit();
     currentState.current = newState;
     currentState.current.onEnter();
+  };
+
+  const update = (delta: number) => {
+    currentState.current.handleUpdate?.(delta);
   };
 
   useEffect(() => {
@@ -23,5 +27,5 @@ export function useStateMachine(initialState: BaseState) {
     currentState.current?.handlePhysics();
   });
 
-  return { currentState, setState };
+  return { currentState, setState, update };
 }

@@ -8,6 +8,6 @@ export function useLapTimer() {
 
   useFrame(() => {
     const now = performance.now();
-    setLapTime((now - lapStartTime)); // Update lapTime in the store
+    setLapTime(now - lapStartTime); // Update lapTime in the store
   });
 }

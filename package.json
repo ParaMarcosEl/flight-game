@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@react-three/drei": "^10.5.0",
@@ -30,6 +31,7 @@
     "eslint-config-next": "15.3.5",
     "eslint-import-resolver-typescript": "^4.4.4",
     "glslify": "^7.1.1",
+    "prettier": "^3.6.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

@@ -58,13 +58,13 @@ const BotCraft = forwardRef<THREE.Object3D, BotCraftProps>(
 
     return (
       <group ref={botRef}>
-        <group scale={SHIP_SCALE} rotation={[0, 0, 0]}>
+        <group scale={SHIP_SCALE} rotation={[0, 0, Math.PI/2]}>
           {/* Use the cloned scene here */}
           <primitive object={clonedScene} scale={0.5} />
         </group>
       </group>
     );
-  }
+  },
 );
 
 BotCraft.displayName = 'BotCraft';

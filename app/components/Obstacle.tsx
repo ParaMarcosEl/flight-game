@@ -8,11 +8,11 @@ type ObstacleProps = {
   type?: string;
 };
 
-const Obstacle = forwardRef<THREE.Mesh, ObstacleProps>(({ position, type = "capsule" }, ref) => {
+const Obstacle = forwardRef<THREE.Mesh, ObstacleProps>(({ position, type = 'capsule' }, ref) => {
   let component;
   switch (type) {
     case 'capsule':
-      component = <capsuleGeometry args={[2]}/>
+      component = <capsuleGeometry args={[2]} />;
   }
   return (
     <mesh ref={ref} position={position}>

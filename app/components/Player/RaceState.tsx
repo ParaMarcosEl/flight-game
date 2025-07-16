@@ -3,13 +3,13 @@
 import { Object3D } from 'three';
 import { BaseState } from '../../lib/StateMachine/BaseState';
 
-export class IdleState implements BaseState {
+export class RaceState implements BaseState {
   onEnter() {
-    console.log('🛑 Entered Idle State');
+    console.log('Entered Race State');
   }
 
   onExit() {
-    console.log('➡️ Exiting Idle State');
+    console.log('➡️ Exiting Race State');
   }
 
   handleInput(): void {}

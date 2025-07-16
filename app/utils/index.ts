@@ -4,16 +4,16 @@ import { SvgMapOptions } from '../constants';
 
 export function getStartPoseFromCurve(
   curve: THREE.Curve<THREE.Vector3>,
-  distance = 0 // Distance along the curve to spawn from
+  distance = 0, // Distance along the curve to spawn from
 ) {
   const t = distance; // value between 0 and 1
   const position = curve.getPointAt(t);
   const tangent = curve.getTangentAt(t).normalize();
 
-//   const up = new THREE.Vector3(0, 1, 0);
+  //   const up = new THREE.Vector3(0, 1, 0);
   const quaternion = new THREE.Quaternion().setFromUnitVectors(
     new THREE.Vector3(0, 0, -1), // default forward
-    tangent
+    tangent,
   );
 
   return {
@@ -41,7 +41,6 @@ export function randomNumber(length: number = 10, charset: string = '0123456789'
   return Number(result);
 }
 
-
 /**
  * Returns the normalized progress `t` (0 to 1) of a point along a curve.
  * @param curve - The THREE.Curve representing the track.
@@ -50,7 +49,7 @@ export function randomNumber(length: number = 10, charset: string = '0123456789'
  */
 export function getProgressAlongCurve(
   curve: THREE.Curve<THREE.Vector3>,
-  position: THREE.Vector3
+  position: THREE.Vector3,
 ): number {
   const divisions = 1000;
   const points = curve.getPoints(divisions);
@@ -67,7 +66,6 @@ export function getProgressAlongCurve(
 
   return closestIndex / divisions;
 }
-
 
 /**
  * @typedef {object} SvgMapOptions
@@ -91,7 +89,7 @@ export function getProgressAlongCurve(
 
 export function generateCurveSvgMap(
   curve: THREE.Curve<THREE.Vector3>,
-  options?: SvgMapOptions
+  options?: SvgMapOptions,
 ): string {
   const {
     svgWidth = 500,
@@ -162,22 +160,16 @@ export function generateCurveSvgMap(
   return svgString;
 }
 
-export function createProjectionHelper(
-  curve: THREE.Curve<THREE.Vector3>,
-  options?: SvgMapOptions
-) {
-  const {
-    svgWidth = 500,
-    svgHeight = 500,
-    padding = 20,
-    numSegments = 100,
-  } = options || {};
+export function createProjectionHelper(curve: THREE.Curve<THREE.Vector3>, options?: SvgMapOptions) {
+  const { svgWidth = 500, svgHeight = 500, padding = 20, numSegments = 100 } = options || {};
 
   const points = curve.getPoints(numSegments);
 
   // Get min/max for projection
-  let minX = Infinity, maxX = -Infinity;
-  let minZ = Infinity, maxZ = -Infinity;
+  let minX = Infinity,
+    maxX = -Infinity;
+  let minZ = Infinity,
+    maxZ = -Infinity;
 
   for (const point of points) {
     minX = Math.min(minX, point.x);
@@ -196,8 +188,8 @@ export function createProjectionHelper(
   const scaleY = curveWorldHeight > 0 ? availableHeight / curveWorldHeight : 1;
   const scale = Math.min(scaleX, scaleY);
 
-  const translateX = padding + (availableWidth - curveWorldWidth * scale) / 2 - (minX * scale);
-  const translateY = padding + (availableHeight - curveWorldHeight * scale) / 2 - (minZ * scale);
+  const translateX = padding + (availableWidth - curveWorldWidth * scale) / 2 - minX * scale;
+  const translateY = padding + (availableHeight - curveWorldHeight * scale) / 2 - minZ * scale;
 
   // Return a projection function
   const project = (point: THREE.Vector3) => {
@@ -205,7 +197,7 @@ export function createProjectionHelper(
     const y2D = point.y;
     return {
       x: x2D * scale + translateX,
-      y: y2D * scale + translateY
+      y: y2D * scale + translateY,
     };
   };
 
@@ -214,7 +206,7 @@ export function createProjectionHelper(
 
 export function generateSvgPathProjected(
   curve: THREE.Curve<THREE.Vector3>,
-  numSegments = 100
+  numSegments = 100,
 ): string {
   const points = curve.getPoints(numSegments);
 
@@ -250,3 +242,46 @@ export function generateSvgPathProjected(
   }, '');
 }
 
+export function setFromBasis(q: THREE.Quaternion, e1: THREE.Vector3, e2: THREE.Vector3, e3: THREE.Vector3): THREE.Quaternion {
+  const m11 = e1.x, m12 = e1.y, m13 = e1.z;
+  const m21 = e2.x, m22 = e2.y, m23 = e2.z;
+  const m31 = e3.x, m32 = e3.y, m33 = e3.z;
+  const trace = m11 + m22 + m33;
+
+  if (trace > 0) {
+    const s = 0.5 / Math.sqrt(trace + 1.0);
+    q.set(
+      -(m32 - m23) * s,
+      -(m13 - m31) * s,
+      -(m21 - m12) * s,
+      0.25 / s
+    );
+  } else if (m11 > m22 && m11 > m33) {
+    const s = 2.0 * Math.sqrt(1.0 + m11 - m22 - m33);
+    q.set(
+      -0.25 * s,
+      -(m12 + m21) / s,
+      -(m13 + m31) / s,
+      (m32 - m23) / s
+    );
+  } else if (m22 > m33) {
+    const s = 2.0 * Math.sqrt(1.0 + m22 - m11 - m33);
+    q.set(
+      -(m12 + m21) / s,
+      -0.25 * s,
+      -(m23 + m32) / s,
+      (m13 - m31) / s
+    );
+  } else {
+    const s = 2.0 * Math.sqrt(1.0 + m33 - m11 - m22);
+    q.set(
+      -(m13 + m31) / s,
+      -(m23 + m32) / s,
+      -0.25 * s,
+      (m21 - m12) / s
+    );
+  }
+
+  q.normalize(); // Always normalize after setting manually
+  return q;
+}
