@@ -3,7 +3,7 @@
 import { Canvas } from '@react-three/fiber';
 import { useRef, useMemo, useState, createRef } from 'react';
 import * as THREE from 'three';
-import Aircraft from '../components/Aircraft/Aircraft';
+import Aircraft from '../components/Player/Aircraft';
 import PlayingField from '../components/PlayingField';
 import FollowCamera from '../components/FollowCamera';
 // import Obstacle from '../components/Obstacle';
@@ -121,6 +121,7 @@ export default function Stage() {
 
         {/* Aircraft */}
         <Aircraft
+          curve={curve}
           aircraftRef={aircraftRef}
           obstacleRefs={obstacleRefs.current}
           playingFieldRef={playingFieldRef}

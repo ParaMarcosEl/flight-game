@@ -53,6 +53,8 @@ export type RaceDataType = Record<
   }
 >;
 
+type PlayerPhaseType = 'Idle' | 'Race' | 'Finished';
+
 type GameState = {
   lapTime: number;
   totalTime: number;
@@ -74,6 +76,7 @@ type GameState = {
       history: LapRecord[];
     }
   >;
+playerPhase: 'Idle' | 'Race' | 'Finished';
 };
 
 export type RacePositonsType = { id: number; position: THREE.Vector3 };
@@ -93,6 +96,7 @@ type GameActions = {
   updateRacePositions: (positions: RacePositonsType[]) => void;
   updateProgresses: (positions: RaceProgressesType[]) => void;
   updateLastProgresses: (progresses: Record<number, number>[]) => void;
+  setPlayerPhase: (state: PlayerPhaseType) => void;
 };
 
 type GameStore = GameState & GameActions;
@@ -116,15 +120,18 @@ export const useGameStore = create(
     finishedCrafts: [],
     playerId: -1,
     raceData: {},
+    playerPhase: 'Idle',
+    
 
     // --- Actions
+    setPlayerPhase: (phase: PlayerPhaseType) => set({playerPhase: phase}),
     setPlayerId: (id) => set({ playerId: id }),
 
     setLapTime: (newTime) => {
       const { raceCompleted, lapHistory } = get();
       if (raceCompleted) return;
 
-      const completedTime = lapHistory.reduce((sum, lap) => sum + lap.time, 0);
+      const completedTime = lapHistory.reduce((sum, lap, idx) => idx < TOTAL_LAPS ? sum + lap.time : 0, 0);
       set({
         lapTime: newTime,
         totalTime: completedTime + newTime,
@@ -133,7 +140,8 @@ export const useGameStore = create(
 
     completeLap: (id) =>
       set((state) => {
-        debugger;
+        if(state.raceData[id].history.length >= TOTAL_LAPS) return state;
+        
         const now = performance.now();
         const prev = state.raceData[id] ?? {
           position: new THREE.Vector3(),
@@ -206,6 +214,7 @@ export const useGameStore = create(
 
     updateLastProgresses: (progresses: Record<number, number>[]) => {
       set((state) => {
+        if (state.raceCompleted) return state;
         const updatedLastProgresses = { ...state.lastProgresses };
         progresses.forEach((prog) => {
           Object.entries(prog).forEach(([id, progress]) => {
@@ -219,6 +228,7 @@ export const useGameStore = create(
 
     updateRacePositions: (positions) =>
       set((state) => {
+        if (state.raceCompleted) return state;
         const updated = { ...state.raceData };
         positions.forEach(({ id, position }) => {
           updated[id] = {
@@ -252,6 +262,7 @@ export const useGameStore = create(
 
     updateRaceData: (id, partialUpdate) =>
       set((state) => {
+        
         const existing = state.raceData[id] ?? {
           position: new THREE.Vector3(),
           progress: 0,
@@ -277,7 +288,7 @@ export const useGameStore = create(
         const already = state.finishedCrafts.includes(id);
         if (already) return {};
 
-        const time = state.raceData[id]?.history.reduce((sum, l) => sum + l.time, 0) ?? 0;
+        const time = state.raceData[id]?.history.reduce((sum, l, idx) => idx < TOTAL_LAPS ? sum + l.time : 0, 0) ?? 0;
 
         return {
           finishedCrafts: [...state.finishedCrafts, id],

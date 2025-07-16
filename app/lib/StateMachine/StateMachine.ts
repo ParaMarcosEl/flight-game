@@ -12,6 +12,10 @@ export function useStateMachine(initialState: BaseState) {
     currentState.current.onEnter();
   };
 
+  const update = (delta: number) => {
+    currentState.current.handleUpdate?.(delta);
+  };
+
   useEffect(() => {
     currentState.current?.onEnter();
     return () => currentState.current?.onExit();
@@ -23,5 +27,5 @@ export function useStateMachine(initialState: BaseState) {
     currentState.current?.handlePhysics();
   });
 
-  return { currentState, setState };
+  return { currentState, setState, update };
 }

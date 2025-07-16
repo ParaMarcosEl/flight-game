@@ -1,10 +1,16 @@
 'use client';
 
 import { useGLTF } from '@react-three/drei';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { usePlayerController } from '../../controllers/PlayerController';
 import * as THREE from 'three';
 import { SHIP_SCALE } from '../../constants';
+import { RaceState } from './RaceState';
+import { useFrame } from '@react-three/fiber';
+import { useStateMachine } from '../../lib/StateMachine/StateMachine';
+import { BaseState } from '../../lib/StateMachine/BaseState';
+import { RaceState as FinishedState } from '../Bot/RaceState';
+import { useGameStore } from '../../controllers/GameController';
 
 type AircraftProps = {
   aircraftRef: React.RefObject<THREE.Group | null>;
@@ -18,6 +24,7 @@ type AircraftProps = {
   onBrakingChange?: (state: boolean) => void;
   startPosition?: [number, number, number];
   startQuaternion?: THREE.Quaternion;
+  curve: THREE.Curve<THREE.Vector3>;
 };
 
 export default function Aircraft({
@@ -32,8 +39,12 @@ export default function Aircraft({
   onSpeedChange,
   onAcceleratingChange,
   onBrakingChange,
+  curve
 }: AircraftProps) {
   const { scene } = useGLTF('/models/spaceship.glb');
+  const raceStateRef = useRef<RaceState | null>(null);
+  const {setState } = useStateMachine(raceStateRef.current as BaseState);
+  const { playerPhase } = useGameStore(s => s);
 
   useEffect(() => {
     if (aircraftRef.current && startPosition && startQuaternion) {
@@ -42,6 +53,27 @@ export default function Aircraft({
     }
   }, [startPosition, startQuaternion, aircraftRef]);
 
+  // Initialize RaceState once
+  useEffect(() => {
+    if (aircraftRef.current) {
+      const raceState = new RaceState();
+      raceStateRef.current = raceState;
+    }
+  }, [aircraftRef, curve]);
+  
+  // Frame update for AI movement
+  useFrame((_, delta) => {
+    if (raceStateRef.current) {
+      raceStateRef.current.handleUpdate(delta);
+
+      if (!aircraftRef.current) return;
+
+      if (playerPhase === 'Finished') setState(new FinishedState(aircraftRef.current, curve));
+      if (playerPhase === 'Race') setState(new RaceState());
+    }
+  });
+  
+  // Add curve to dependencies if RaceState depends on it
   usePlayerController({
     aircraftRef,
     obstacleRefs,
@@ -52,6 +84,7 @@ export default function Aircraft({
     onSpeedChange,
     onAcceleratingChange,
     onBrakingChange,
+    curve
   });
 
   return (

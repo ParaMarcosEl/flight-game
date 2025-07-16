@@ -8,7 +8,7 @@ export const SEED = Math.random() * Date.now();
 export const TUBE_RADIUS = 30;
 
 // SHIP
-export const MAX_SPEED = 3;
+export const MAX_SPEED = 2;
 export const SHIP_SCALE = 1;
 
 // AI

@@ -4,6 +4,7 @@ import { useGameStore } from '../../controllers/GameController';
 import { formatTime } from '../../utils';
 import SpeedMeter from '../SpeedMeter';
 import { CSSProperties } from 'react';
+import { TOTAL_LAPS } from '../../constants';
 
 export default function HUD({ speed }: { speed: number }) {
   const { lapTime, raceCompleted, totalTime, raceData, playerId } = useGameStore((state) => {
@@ -23,9 +24,9 @@ export default function HUD({ speed }: { speed: number }) {
       </>
     ) : (
       <>
-        {playerHistory.map((lap) => (
+        {playerHistory.map((lap, idx) => idx < TOTAL_LAPS && (
           <div key={lap.timestamp}>
-            Lap {lap.lapNumber}: {formatTime(lap.time)}s
+            Lap {lap.lapNumber}: {formatTime(lap.time)}
           </div>
         ))}
       </>
