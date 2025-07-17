@@ -12,7 +12,7 @@ export const MAX_SPEED = 2;
 export const SHIP_SCALE = 1;
 
 // AI
-export const BOT_SPEED = 0.001;
+export const BOT_SPEED = 0.0008;
 
 //
 export const TOTAL_LAPS = 3;

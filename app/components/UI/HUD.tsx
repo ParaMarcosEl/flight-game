@@ -1,19 +1,19 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useRaceStandings } from '../../utils/useRaceStandings';
+import { useRaceStandings } from '../../controllers/useRaceStandings';
 import { useGameStore } from '../../controllers/GameController';
 import { formatTime } from '../../utils';
-import SpeedMeter from '../SpeedMeter';
 import { CSSProperties } from 'react';
 import { TOTAL_LAPS } from '../../constants';
 
-export default function HUD({ speed }: { speed: number }) {
-  const { lapTime, raceCompleted, totalTime, raceData, playerId } = useGameStore((state) => {
+export default function HUD() {
+  const { lapTime, totalTime, raceData, playerId } = useGameStore((state) => {
     return state;
   });
 
-  const { finished, inProgress } = useRaceStandings();
+  const { inProgress, finished, raceOver } = useRaceStandings();
 
   const playerHistory = raceData[playerId]?.history || [];
+  const player =
+    inProgress.find(({ id }) => id === playerId) || finished.find(({ id }) => id === playerId);
 
   const history =
     playerHistory.length === 0 ? (
@@ -24,39 +24,30 @@ export default function HUD({ speed }: { speed: number }) {
       </>
     ) : (
       <>
-        {playerHistory.map((lap, idx) => idx < TOTAL_LAPS && (
-          <div key={lap.timestamp}>
-            Lap {lap.lapNumber}: {formatTime(lap.time)}
-          </div>
-        ))}
+        <hr />
+        <div>Lap History:</div>
+        {playerHistory.map(
+          (lap, idx) =>
+            idx < TOTAL_LAPS && (
+              <div key={lap.timestamp}>
+                Lap {lap.lapNumber}: {formatTime(lap.time)}
+              </div>
+            ),
+        )}
       </>
     );
 
-  const standingsUI = (
+  const standingsUI = inProgress.length > 0 && (
     <>
       <hr />
-      <div>🏁 Standings:</div>
-      <ol>
-        {finished.map((player) => {
-          const time = raceData[player.id].history.reduce((prev, curr) => curr.time + prev, 0);
-          return (
-            <li key={player.id}>
-              #{player.place} Place – {player.id === playerId ? 'You' : `Bot ${player.id}`}, Time:{' '}
-              {formatTime(time)}
-            </li>
-          );
-        })}
-      </ol>
+      <div>Place:</div>
+      <div>{player?.place}</div>
     </>
   );
 
   return (
     <div style={hudStyle}>
-      <div>Speed: {(Math.abs(speed) * Math.PI * 200).toFixed(2)} m/s</div>
-      <SpeedMeter speed={Math.abs(speed)} />
-      <hr />
-
-      {raceCompleted ? (
+      {raceOver ? (
         <>
           <div>🎉 RACE COMPLETED!</div>
           <div>Total Time: {formatTime(totalTime)}</div>
@@ -69,14 +60,7 @@ export default function HUD({ speed }: { speed: number }) {
           {history}
         </>
       )}
-
-      <hr />
-      <hr />
-      <div>Controls:</div>
-      <div>Accelerate: I</div>
-      <div>Brake: K</div>
-      <div>Roll: A/D</div>
-      <div>Pitch: W/S</div>
+      {standingsUI}
     </div>
   );
 }

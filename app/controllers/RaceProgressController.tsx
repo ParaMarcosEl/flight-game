@@ -89,8 +89,8 @@ export function useRaceProgress({
         if (crossedFinishLine) {
           useGameStore.getState().completeLap(Number(id));
           onLapComplete?.();
-          
-          if (parseInt(id) === playerId && player.lapCount >= TOTAL_LAPS) {
+
+          if (parseInt(id) === playerId && player.lapCount > TOTAL_LAPS) {
             useGameStore.getState().completeRace();
             useGameStore.getState().setPlayerPhase('Finished');
             onRaceComplete?.();
