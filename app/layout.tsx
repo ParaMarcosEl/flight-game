@@ -3,8 +3,8 @@ import Head from 'next/head';
 import './globals.css';
 
 export const metadata = {
-  title: 'My Flight Game',
-  description: 'A flight game with React Three Fiber',
+  title: 'Nebula GP',
+  description: 'Anti-Gravity Racing',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

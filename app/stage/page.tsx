@@ -87,7 +87,7 @@ export default function Stage() {
         position: 'absolute',
         top: 0,
         left: 0
-      }} href={'/stage-select'} >EXIT GAME</Link>
+      }} href={'/stage-select'} >EXIT RACE</Link>
       <HUD />
       <MiniMap positions={positions} />
       <StandingsUI />
