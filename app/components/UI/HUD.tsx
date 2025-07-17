@@ -55,7 +55,7 @@ export default function HUD() {
         </>
       ) : (
         <>
-          <div>Current Lap: {(raceData[playerId]?.lapCount || 0) + 1}</div>
+          <div>Current Lap: {(raceData[playerId]?.lapCount || 0) + 1}/{TOTAL_LAPS}</div>
           <div>Current Time: {formatTime(lapTime)}</div>
           {history}
         </>
