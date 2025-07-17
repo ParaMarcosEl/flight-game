@@ -1,4 +1,4 @@
-import { curve } from '../../lib/flightPath'; // your actual track
+import { curve } from '../../../lib/flightPath'; // your actual track
 import { MiniMapWrapper } from './MiniMapWrapper';
 import * as THREE from 'three';
 

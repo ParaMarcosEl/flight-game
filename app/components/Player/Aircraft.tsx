@@ -39,12 +39,12 @@ export default function Aircraft({
   onSpeedChange,
   onAcceleratingChange,
   onBrakingChange,
-  curve
+  curve,
 }: AircraftProps) {
   const { scene } = useGLTF('/models/spaceship.glb');
   const raceStateRef = useRef<RaceState | null>(null);
-  const {setState } = useStateMachine(raceStateRef.current as BaseState);
-  const { playerPhase } = useGameStore(s => s);
+  const { setState } = useStateMachine(raceStateRef.current as BaseState);
+  const { playerPhase } = useGameStore((s) => s);
 
   useEffect(() => {
     if (aircraftRef.current && startPosition && startQuaternion) {
@@ -60,7 +60,7 @@ export default function Aircraft({
       raceStateRef.current = raceState;
     }
   }, [aircraftRef, curve]);
-  
+
   // Frame update for AI movement
   useFrame((_, delta) => {
     if (raceStateRef.current) {
@@ -72,7 +72,7 @@ export default function Aircraft({
       if (playerPhase === 'Race') setState(new RaceState());
     }
   });
-  
+
   // Add curve to dependencies if RaceState depends on it
   usePlayerController({
     aircraftRef,
@@ -84,7 +84,7 @@ export default function Aircraft({
     onSpeedChange,
     onAcceleratingChange,
     onBrakingChange,
-    curve
+    curve,
   });
 
   return (

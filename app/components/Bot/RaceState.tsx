@@ -10,8 +10,8 @@ export class RaceState implements BaseState {
   speed = 0.0005;
 
   private time = 0;
-  private noiseAmplitude = 5;
-  private noiseFrequency = 1.5;
+  private noiseAmplitude = 0;
+  private noiseFrequency = 1;
 
   constructor(bot: THREE.Object3D, curve: THREE.Curve<THREE.Vector3>, _speed?: number) {
     this.bot = bot;
@@ -53,7 +53,7 @@ export class RaceState implements BaseState {
     const noisyPos = pos.clone().add(offset);
 
     // Update bot position and rotation
-    this.bot.position.copy(noisyPos);
+    this.bot.position.copy(pos.clone());
     this.bot.lookAt(noisyPos.clone().add(tangent));
 
     this.bot.userData.curvePosition = pos.clone(); // raw on-curve position

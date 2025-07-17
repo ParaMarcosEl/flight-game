@@ -13,10 +13,11 @@ import { curve } from '../lib/flightPath';
 import { MAX_SPEED } from '../constants';
 import { Skybox } from '../components/Skybox';
 import BotCraft from '../components/Bot/BotCraft';
-import MiniMap from '../components/UI/MiniMap';
+import MiniMap from '../components/UI/MiniMap/MiniMap';
 import { useGameStore } from '../controllers/GameController';
 import { useRaceProgress } from '../controllers/RaceProgressController';
 import { StandingsUI } from '../components/UI/StandingsUI';
+import { RaceOver } from '../components/UI/RaceOver';
 
 function RaceProgressTracker({
   playerRef,
@@ -79,6 +80,7 @@ export default function Stage() {
       <HUD speed={speed} />
       <MiniMap positions={positions} />
       <StandingsUI />
+      <RaceOver />
 
       {/* Scene */}
       <Canvas camera={{ position: [0, 5, 15], fov: 60 }}>

@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useRaceStandings } from '../../utils/useRaceStandings';
+import { useRaceStandings } from '../../controllers/useRaceStandings';
 import { useGameStore } from '../../controllers/GameController';
 import { formatTime } from '../../utils';
-import SpeedMeter from '../SpeedMeter';
 import { CSSProperties } from 'react';
 import { TOTAL_LAPS } from '../../constants';
 
@@ -24,11 +23,14 @@ export default function HUD({ speed }: { speed: number }) {
       </>
     ) : (
       <>
-        {playerHistory.map((lap, idx) => idx < TOTAL_LAPS && (
-          <div key={lap.timestamp}>
-            Lap {lap.lapNumber}: {formatTime(lap.time)}
-          </div>
-        ))}
+        {playerHistory.map(
+          (lap, idx) =>
+            idx < TOTAL_LAPS && (
+              <div key={lap.timestamp}>
+                Lap {lap.lapNumber}: {formatTime(lap.time)}
+              </div>
+            ),
+        )}
       </>
     );
 
@@ -52,8 +54,6 @@ export default function HUD({ speed }: { speed: number }) {
 
   return (
     <div style={hudStyle}>
-      <div>Speed: {(Math.abs(speed) * Math.PI * 200).toFixed(2)} m/s</div>
-      <SpeedMeter speed={Math.abs(speed)} />
       <hr />
 
       {raceCompleted ? (
@@ -69,14 +69,6 @@ export default function HUD({ speed }: { speed: number }) {
           {history}
         </>
       )}
-
-      <hr />
-      <hr />
-      <div>Controls:</div>
-      <div>Accelerate: I</div>
-      <div>Brake: K</div>
-      <div>Roll: A/D</div>
-      <div>Pitch: W/S</div>
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import * as THREE from 'three';
-import { useGameStore } from '../../controllers/GameController';
+import { useGameStore } from '../../../controllers/GameController';
 
 type ProjectPoint = { id: number; isPlayer: boolean; v: THREE.Vector3 };
 

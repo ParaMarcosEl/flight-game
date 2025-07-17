@@ -1,26 +1,34 @@
 import { useMemo } from 'react';
-import { useGameStore } from '../controllers/GameController';
+import { useGameStore } from './GameController';
 import { TOTAL_LAPS } from '../constants';
 
 export function useRaceStandings() {
   const raceData = useGameStore.getState().raceData;
+  const playerId = useGameStore.getState().playerId;
   return useMemo(() => {
     const finishedList = Object.entries(useGameStore.getState().raceData)
       .filter(([id, player]) => player.lapCount >= TOTAL_LAPS && parseInt(id) >= 0)
-      .sort(([, a], [, b]) => a.place - b.place)
-      .map(([id, player]) => ({
+      .sort(
+        ([, a], [, b]) =>
+          a.history.reduce((sum, lap) => sum + lap.time, 0) -
+          b.history.reduce((sum, lap) => sum + lap.time, 0),
+      )
+      .map(([id, { history }], idx) => ({
         id: parseInt(id),
-        place: player.place,
+        place: idx + 1,
         finished: true,
+        time: history.reduce((sum, lap) => sum + lap.time, 0),
+        history,
       }));
+
     const inProgress = Object.entries(useGameStore.getState().raceData)
       .filter(([id, player]) => player.lapCount < TOTAL_LAPS && parseInt(id) >= 0)
       .sort(([, a], [, b]) => {
         if (b.lapCount !== a.lapCount) return b.lapCount - a.lapCount;
         if (b.progress !== a.progress) return b.progress - a.progress;
         return (
-          a.history.reduce((prev, curr) => curr.time + prev, 0) -
-          b.history.reduce((prev, curr) => curr.time + prev, 0)
+          a.history.reduce((sum, lap) => sum + lap.time, 0) -
+          b.history.reduce((sum, lap) => sum + lap.time, 0)
         );
       })
       .map(([id, player]) => {
@@ -28,9 +36,11 @@ export function useRaceStandings() {
         const total = player?.history?.reduce((sum, lap) => sum + lap.time, 0) ?? 0;
         return { id, laps, progress: player.progress, total, finished: false };
       });
+
     return {
       finished: finishedList,
       inProgress,
+      raceOver: raceData[playerId]?.history.length >= TOTAL_LAPS,
     };
   }, [raceData]);
 }

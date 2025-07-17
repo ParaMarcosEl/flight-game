@@ -242,44 +242,35 @@ export function generateSvgPathProjected(
   }, '');
 }
 
-export function setFromBasis(q: THREE.Quaternion, e1: THREE.Vector3, e2: THREE.Vector3, e3: THREE.Vector3): THREE.Quaternion {
-  const m11 = e1.x, m12 = e1.y, m13 = e1.z;
-  const m21 = e2.x, m22 = e2.y, m23 = e2.z;
-  const m31 = e3.x, m32 = e3.y, m33 = e3.z;
+export function setFromBasis(
+  q: THREE.Quaternion,
+  e1: THREE.Vector3,
+  e2: THREE.Vector3,
+  e3: THREE.Vector3,
+): THREE.Quaternion {
+  const m11 = e1.x,
+    m12 = e1.y,
+    m13 = e1.z;
+  const m21 = e2.x,
+    m22 = e2.y,
+    m23 = e2.z;
+  const m31 = e3.x,
+    m32 = e3.y,
+    m33 = e3.z;
   const trace = m11 + m22 + m33;
 
   if (trace > 0) {
     const s = 0.5 / Math.sqrt(trace + 1.0);
-    q.set(
-      -(m32 - m23) * s,
-      -(m13 - m31) * s,
-      -(m21 - m12) * s,
-      0.25 / s
-    );
+    q.set(-(m32 - m23) * s, -(m13 - m31) * s, -(m21 - m12) * s, 0.25 / s);
   } else if (m11 > m22 && m11 > m33) {
     const s = 2.0 * Math.sqrt(1.0 + m11 - m22 - m33);
-    q.set(
-      -0.25 * s,
-      -(m12 + m21) / s,
-      -(m13 + m31) / s,
-      (m32 - m23) / s
-    );
+    q.set(-0.25 * s, -(m12 + m21) / s, -(m13 + m31) / s, (m32 - m23) / s);
   } else if (m22 > m33) {
     const s = 2.0 * Math.sqrt(1.0 + m22 - m11 - m33);
-    q.set(
-      -(m12 + m21) / s,
-      -0.25 * s,
-      -(m23 + m32) / s,
-      (m13 - m31) / s
-    );
+    q.set(-(m12 + m21) / s, -0.25 * s, -(m23 + m32) / s, (m13 - m31) / s);
   } else {
     const s = 2.0 * Math.sqrt(1.0 + m33 - m11 - m22);
-    q.set(
-      -(m13 + m31) / s,
-      -(m23 + m32) / s,
-      -0.25 * s,
-      (m21 - m12) / s
-    );
+    q.set(-(m13 + m31) / s, -(m23 + m32) / s, -0.25 * s, (m21 - m12) / s);
   }
 
   q.normalize(); // Always normalize after setting manually
