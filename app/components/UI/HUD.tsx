@@ -1,16 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useRaceStandings } from '../../controllers/useRaceStandings';
 import { useGameStore } from '../../controllers/GameController';
 import { formatTime } from '../../utils';
 import { CSSProperties } from 'react';
 import { TOTAL_LAPS } from '../../constants';
 
-export default function HUD({ speed }: { speed: number }) {
+export default function HUD() {
   const { lapTime, raceCompleted, totalTime, raceData, playerId } = useGameStore((state) => {
     return state;
   });
 
-  const { finished, inProgress } = useRaceStandings();
+  const { inProgress  } = useRaceStandings();
 
   const playerHistory = raceData[playerId]?.history || [];
 
@@ -23,6 +22,8 @@ export default function HUD({ speed }: { speed: number }) {
       </>
     ) : (
       <>
+        <hr />
+        <div>Lap History:</div>
         {playerHistory.map(
           (lap, idx) =>
             idx < TOTAL_LAPS && (
@@ -39,7 +40,7 @@ export default function HUD({ speed }: { speed: number }) {
       <hr />
       <div>🏁 Standings:</div>
       <ol>
-        {finished.map((player) => {
+        {inProgress.map((player) => {
           const time = raceData[player.id].history.reduce((prev, curr) => curr.time + prev, 0);
           return (
             <li key={player.id}>
@@ -54,8 +55,6 @@ export default function HUD({ speed }: { speed: number }) {
 
   return (
     <div style={hudStyle}>
-      <hr />
-
       {raceCompleted ? (
         <>
           <div>🎉 RACE COMPLETED!</div>
@@ -69,6 +68,7 @@ export default function HUD({ speed }: { speed: number }) {
           {history}
         </>
       )}
+      {standingsUI}
     </div>
   );
 }

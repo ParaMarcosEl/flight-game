@@ -31,10 +31,14 @@ export function useRaceStandings() {
           b.history.reduce((sum, lap) => sum + lap.time, 0)
         );
       })
-      .map(([id, player]) => {
-        const laps = player?.lapCount ?? 0;
-        const total = player?.history?.reduce((sum, lap) => sum + lap.time, 0) ?? 0;
-        return { id, laps, progress: player.progress, total, finished: false };
+      .map(([id, { history}], idx) => {
+        return {
+          id: parseInt(id),
+          place: idx + 1 + finishedList.length,
+          finished: true,
+          time: history.reduce((sum, lap) => sum + lap.time, 0),
+          history,
+        };
       });
 
     return {

@@ -2,7 +2,7 @@
 'use client';
 
 import React, { CSSProperties } from 'react';
-import { MAX_SPEED } from '../constants';
+import { MAX_SPEED } from '../../../constants';
 
 type SpeedMeterProps = {
   speed: number; // value from 0 to 1
