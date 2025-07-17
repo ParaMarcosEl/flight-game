@@ -1,11 +1,9 @@
-import { TOTAL_LAPS } from '../../constants';
 import { useGameStore } from '../../controllers/GameController';
 import { formatTime } from '../../utils';
 import { useRaceStandings } from '../../controllers/useRaceStandings';
 
 export function StandingsUI() {
   const { finished } = useRaceStandings();
-  const { raceData } = useGameStore();
 
   return (
     finished.length > 0 && (
@@ -24,16 +22,10 @@ export function StandingsUI() {
       >
         <h4>🏁 Standings</h4>
         <ol>
-          {finished.reverse().map(({ id }, i) => (
-            <li key={id}>
-              {id === useGameStore.getState().playerId ? 'You' : `Bot${id}`} — Placed #{i + 1}{' '}
-              {formatTime(
-                raceData[id].history.reduce(
-                  (prev: number, curr: { time: number }, idx) =>
-                    idx < TOTAL_LAPS ? prev + curr.time : 0 + prev,
-                  0,
-                ),
-              )}
+          {finished.map(({ id, time, place }, i) => (
+            <li key={i}>
+              {id === useGameStore.getState().playerId ? 'You' : `Bot${id}`} — Placed #{place}{' '}
+              {formatTime(time)}
             </li>
           ))}
         </ol>

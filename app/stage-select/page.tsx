@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { CSSProperties } from 'react';
 import { GalaxyBackground } from '../components/UI/backgrounds/Galaxy';
-
+import { blue } from '../constants/colors';
 const styles = {
   main: {
     padding: '2rem',
@@ -16,18 +16,19 @@ const styles = {
   heading: {
     fontSize: '2.5rem',
     marginBottom: '2rem',
-    color: '#0ff',
+    color: blue,
   } as CSSProperties,
   link: {
     display: 'inline-block',
     padding: '0.75rem 1.5rem',
-    backgroundColor: '#0ff',
+    backgroundColor: blue,
     color: '#000',
     textDecoration: 'none',
     fontWeight: 'bold',
     borderRadius: '6px',
     transition: 'all 0.3s ease',
     margin: '0.5rem',
+    minWidth: '100px',
   } as CSSProperties,
 };
 
@@ -36,7 +37,7 @@ export default function StageSelect() {
     <>
       <GalaxyBackground />
       <main style={styles.main}>
-        <h1 style={styles.heading}>🪐 Select Stage</h1>
+        <h1 style={styles.heading}> Select Stage</h1>
 
         <div>
           <Link href="/stage" style={styles.link}>
@@ -47,7 +48,7 @@ export default function StageSelect() {
 
         <div>
           <Link href="/" style={styles.link}>
-            🏠 Home
+            Home
           </Link>
         </div>
       </main>

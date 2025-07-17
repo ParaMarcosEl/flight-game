@@ -24,11 +24,18 @@ const meterWrapper: CSSProperties = {
   backgroundColor: '#333',
   borderRadius: '4px',
   overflow: 'hidden',
-  marginBottom: '6px',
+  borderTopLeftRadius: '80%',
+  borderTopRightRadius: '0%',
+  borderBottomRightRadius: '25%',
+  borderBottomLeftRadius: '0',
 };
 
 const meterBar: CSSProperties = {
   height: '100%',
   backgroundColor: '#00ff88',
   transition: 'width 0.1s linear',
+  borderTopLeftRadius: '80%',
+  borderTopRightRadius: '0%',
+  borderBottomRightRadius: '25%',
+  borderBottomLeftRadius: '0',
 };

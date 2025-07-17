@@ -1,7 +1,7 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
-import { useRef, useMemo, useState, createRef } from 'react';
+import { useRef, useMemo, useState, createRef, useEffect } from 'react';
 import * as THREE from 'three';
 import Aircraft from '../components/Player/Aircraft';
 import PlayingField from '../components/PlayingField';
@@ -42,8 +42,7 @@ export default function Stage() {
   // const botRef6 = useRef<THREE.Object3D | null>(null);
   // const botRef7 = useRef<THREE.Object3D | null>(null);
   const bounds = { x: 500, y: 250, z: 500 };
-
-  const { raceData } = useGameStore((state) => state);
+  const { raceData, reset } = useGameStore((state) => state);
   const positions = Object.entries(raceData)
     .map(([id, player]) => ({
       isPlayer: player.isPlayer,
@@ -75,6 +74,10 @@ export default function Stage() {
     [],
   );
 
+  useEffect(() => {
+    reset();
+  }, [reset]);
+
   return (
     <main style={{ width: '100vw', height: '100vh' }}>
       {/* UI */}
@@ -82,7 +85,7 @@ export default function Stage() {
       <MiniMap positions={positions} />
       <StandingsUI />
       <RaceOver />
-      <Speedometer speed={speed}/>
+      <Speedometer speed={speed} />
 
       {/* Scene */}
       <Canvas camera={{ position: [0, 5, 15], fov: 60 }}>

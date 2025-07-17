@@ -142,7 +142,7 @@ export const useGameStore = create(
 
     completeLap: (id) =>
       set((state) => {
-        if (state.raceData[id].history.length >= TOTAL_LAPS) return state;
+        if ((state.raceData[id]?.history?.length || 0) >= TOTAL_LAPS) return state;
 
         const now = performance.now();
         const prev = state.raceData[id] ?? {
@@ -154,22 +154,22 @@ export const useGameStore = create(
           history: [],
         };
 
-        const lapTime = now - (prev.history.at(-1)?.timestamp ?? state.lapStartTime);
+        const lapTime = now - ((prev?.history || []).at(-1)?.timestamp ?? state.lapStartTime);
 
         const updatedLap = {
-          lapNumber: prev.lapCount + 1,
+          lapNumber: (prev?.lapCount || 0) + 1,
           time: lapTime,
           timestamp: now,
         };
 
-        const newHistory = [...prev.history, updatedLap];
+        const newHistory = [...(prev?.history || []), updatedLap];
 
         return {
           raceData: {
             ...state.raceData,
             [id]: {
               ...prev,
-              lapCount: prev.lapCount + 1,
+              lapCount: (prev?.lapCount || 0) + 1,
               history: newHistory,
             },
           },

@@ -72,7 +72,7 @@ export function usePlayerController({
     const ship = aircraftRef.current;
     if (!ship) return;
 
-    if (raceData[playerId]?.history.length >= TOTAL_LAPS) {
+    if ((raceData[playerId]?.history?.length || 0) >= TOTAL_LAPS) {
       const bot = aircraftRef.current;
       if (!bot) return;
 
@@ -124,8 +124,8 @@ export function usePlayerController({
       // --- Keyboard fallback ---
       if (keys.current['a']) angularVelocity.current.z += 0.03;
       if (keys.current['d']) angularVelocity.current.z -= 0.03;
-      if (keys.current['w']) angularVelocity.current.x -= 0.01;
-      if (keys.current['s']) angularVelocity.current.x += 0.01;
+      if (keys.current['w']) angularVelocity.current.x -= 0.008;
+      if (keys.current['s']) angularVelocity.current.x += 0.008;
 
       const accelerating = !!(keys.current['i'] || gp?.buttons?.[0]?.pressed);
       const braking = !!(keys.current['k'] || gp?.buttons?.[2]?.pressed);

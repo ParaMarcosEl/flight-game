@@ -3,23 +3,42 @@ import Link from 'next/link';
 import { useGameStore } from '../../controllers/GameController';
 import { formatTime } from '../../utils';
 import { useRaceStandings } from '../../controllers/useRaceStandings';
+import { curve } from '../../lib/flightPath';
 
 type stylesType = Record<string, CSSProperties>;
 
 export function RaceOver() {
   const { finished, raceOver } = useRaceStandings();
+  const reset = useGameStore((s) => s.reset);
+  const setRacePosition = useGameStore((s) => s.setRacePosition);
   const playerId = useGameStore.getState().playerId;
   const player = finished.find(({ id }) => id === playerId);
+
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     if (raceOver) {
-      setTimeout(() => setVisible(true), 100); // slight delay for smooth transition
+      setTimeout(() => setVisible(true), 100);
     }
   }, [raceOver]);
 
   if (!raceOver) return null;
-  console.log({ player });
+
+  const handleTryAgain = () => {
+    reset();
+
+    // Reposition player to start
+    const startingPosition = curve.getPointAt(0);
+    setRacePosition(playerId, startingPosition);
+  };
+
+  const history =
+    (player?.history || []).length > 0 &&
+    player?.history.map(({ time, lapNumber }, idx) => (
+      <div key={idx}>
+        lap {lapNumber}: {formatTime(time)}
+      </div>
+    ));
 
   const styles: stylesType = {
     raceOver: {
@@ -45,23 +64,14 @@ export function RaceOver() {
       <div>You placed: </div>
       <div>{player?.place}</div>
       <div>Race Time: {formatTime(player?.time || 0)}</div>
-      {/* 
- / Position, lap history, 
-*/}
+      <hr />
+      {history}
       <hr />
       <br />
       <div>
-        <Link
-          href={'#'}
-          onClick={() => {
-            useGameStore.getState().reset();
-          }}
-        >
-          Try Again
+        <Link href={'/stage-select'} onClick={handleTryAgain}>
+          Stage Select
         </Link>
-      </div>
-      <div>
-        <Link href={'/stage-select'}>Stage Select</Link>
       </div>
     </div>
   );

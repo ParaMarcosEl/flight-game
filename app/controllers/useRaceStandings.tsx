@@ -10,8 +10,8 @@ export function useRaceStandings() {
       .filter(([id, player]) => player.lapCount >= TOTAL_LAPS && parseInt(id) >= 0)
       .sort(
         ([, a], [, b]) =>
-          a.history.reduce((sum, lap) => sum + lap.time, 0) -
-          b.history.reduce((sum, lap) => sum + lap.time, 0),
+          a?.history.reduce((sum, lap) => sum + lap.time, 0) -
+          b?.history.reduce((sum, lap) => sum + lap.time, 0),
       )
       .map(([id, { history }], idx) => ({
         id: parseInt(id),
@@ -22,21 +22,21 @@ export function useRaceStandings() {
       }));
 
     const inProgress = Object.entries(useGameStore.getState().raceData)
-      .filter(([id, player]) => player.lapCount < TOTAL_LAPS && parseInt(id) >= 0)
+      .filter(([id, player]) => (player?.history?.length || 0) < TOTAL_LAPS && parseInt(id) >= 0)
       .sort(([, a], [, b]) => {
         if (b.lapCount !== a.lapCount) return b.lapCount - a.lapCount;
         if (b.progress !== a.progress) return b.progress - a.progress;
         return (
-          a.history.reduce((sum, lap) => sum + lap.time, 0) -
-          b.history.reduce((sum, lap) => sum + lap.time, 0)
+          a?.history.reduce((sum, lap) => sum + lap.time, 0) -
+          b?.history.reduce((sum, lap) => sum + lap.time, 0)
         );
       })
-      .map(([id, { history}], idx) => {
+      .map(([id, { history }], idx) => {
         return {
           id: parseInt(id),
           place: idx + 1 + finishedList.length,
           finished: true,
-          time: history.reduce((sum, lap) => sum + lap.time, 0),
+          time: history?.reduce((sum, lap) => sum + lap.time, 0) || 0,
           history,
         };
       });
@@ -44,7 +44,7 @@ export function useRaceStandings() {
     return {
       finished: finishedList,
       inProgress,
-      raceOver: raceData[playerId]?.history.length >= TOTAL_LAPS,
+      raceOver: (raceData[playerId]?.history?.length || 0) >= TOTAL_LAPS,
     };
   }, [raceData]);
 }

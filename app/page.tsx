@@ -40,11 +40,16 @@ const styles = {
     justifyContent: 'center',
   } as CSSProperties,
   subheading: {
-    background: 'rgba(0, 0, 0, .4)',
+    display: 'inline-block',
+    background: 'rgba(0, 0, 0, .7)',
     fontSize: '20px',
     textAlign: 'center',
     color: blue,
     marginBottom: '1rem',
+    borderRadius: '5px',
+    minWidth: '200px',
+    padding: '10px',
+    alignSelf: 'center',
   } as CSSProperties,
   table: {
     width: '100%',
@@ -111,9 +116,9 @@ export default function Home() {
         </Link>
 
         <section style={styles.controlsSection}>
-          <h2 style={styles.subheading}>🕹️ Controls</h2>
+          <div style={styles.subheading}>🕹️ Controls</div>
 
-          <h3 style={styles.subheading}>Keyboard</h3>
+          <div style={styles.subheading}>Keyboard</div>
           <table style={styles.table}>
             <thead>
               <tr>

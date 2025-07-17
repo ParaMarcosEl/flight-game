@@ -5,13 +5,15 @@ import { CSSProperties } from 'react';
 import { TOTAL_LAPS } from '../../constants';
 
 export default function HUD() {
-  const { lapTime, raceCompleted, totalTime, raceData, playerId } = useGameStore((state) => {
+  const { lapTime, totalTime, raceData, playerId } = useGameStore((state) => {
     return state;
   });
 
-  const { inProgress  } = useRaceStandings();
+  const { inProgress, finished, raceOver } = useRaceStandings();
 
   const playerHistory = raceData[playerId]?.history || [];
+  const player =
+    inProgress.find(({ id }) => id === playerId) || finished.find(({ id }) => id === playerId);
 
   const history =
     playerHistory.length === 0 ? (
@@ -35,27 +37,17 @@ export default function HUD() {
       </>
     );
 
-  const standingsUI = (
+  const standingsUI = inProgress.length > 0 && (
     <>
       <hr />
-      <div>🏁 Standings:</div>
-      <ol>
-        {inProgress.map((player) => {
-          const time = raceData[player.id].history.reduce((prev, curr) => curr.time + prev, 0);
-          return (
-            <li key={player.id}>
-              #{player.place} Place – {player.id === playerId ? 'You' : `Bot ${player.id}`}, Time:{' '}
-              {formatTime(time)}
-            </li>
-          );
-        })}
-      </ol>
+      <div>Place:</div>
+      <div>{player?.place}</div>
     </>
   );
 
   return (
     <div style={hudStyle}>
-      {raceCompleted ? (
+      {raceOver ? (
         <>
           <div>🎉 RACE COMPLETED!</div>
           <div>Total Time: {formatTime(totalTime)}</div>
