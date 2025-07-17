@@ -19,6 +19,7 @@ import { useRaceProgress } from '../controllers/RaceProgressController';
 import { StandingsUI } from '../components/UI/StandingsUI';
 import { RaceOver } from '../components/UI/RaceOver';
 import { Speedometer } from '../components/UI/Speedometer/Speedometer';
+import Link from 'next/link';
 
 function RaceProgressTracker({
   playerRef,
@@ -81,6 +82,12 @@ export default function Stage() {
   return (
     <main style={{ width: '100vw', height: '100vh' }}>
       {/* UI */}
+      <Link style={{
+        zIndex: 1,
+        position: 'absolute',
+        top: 0,
+        left: 0
+      }} href={'/stage-select'} >EXIT GAME</Link>
       <HUD />
       <MiniMap positions={positions} />
       <StandingsUI />
