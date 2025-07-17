@@ -18,6 +18,7 @@ import { useGameStore } from '../controllers/GameController';
 import { useRaceProgress } from '../controllers/RaceProgressController';
 import { StandingsUI } from '../components/UI/StandingsUI';
 import { RaceOver } from '../components/UI/RaceOver';
+import { Speedometer } from '../components/UI/Speedometer/Speedometer';
 
 function RaceProgressTracker({
   playerRef,
@@ -77,10 +78,11 @@ export default function Stage() {
   return (
     <main style={{ width: '100vw', height: '100vh' }}>
       {/* UI */}
-      <HUD speed={speed} />
+      <HUD />
       <MiniMap positions={positions} />
       <StandingsUI />
       <RaceOver />
+      <Speedometer speed={speed}/>
 
       {/* Scene */}
       <Canvas camera={{ position: [0, 5, 15], fov: 60 }}>
