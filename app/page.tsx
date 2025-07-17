@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Head from 'next/head';
 import { CSSProperties } from 'react';
 import { GalaxyBackground } from './components/UI/backgrounds/Galaxy';
 import { blue } from './constants/colors';
@@ -107,14 +106,6 @@ const gamepadControls = [
 export default function Home() {
   return (
     <>
-      <Head>
-        <title>Nebula GP</title>
-        <meta name="description" content="Anti-Gravity Racing" />
-        <meta property="og:title" content="Nebula GP" />
-        <meta property="og:description" content="Anti-Gravity Racing" />
-        <meta property="og:url" content="https://flight-game-lake.vercel.app" />
-        <meta property="og:type" content="website" />
-      </Head>
       <GalaxyBackground />
       <main style={styles.main}>
         <h1 style={styles.heading}>NEBULA GP</h1>
