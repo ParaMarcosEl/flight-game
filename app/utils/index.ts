@@ -276,3 +276,9 @@ export function setFromBasis(
   q.normalize(); // Always normalize after setting manually
   return q;
 }
+
+export function isMobileDevice() {
+  return (
+    typeof window !== 'undefined' && /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+  );
+}

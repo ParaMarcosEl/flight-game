@@ -14,6 +14,9 @@ const defaultRaceData = (): RaceData => ({
   history: [],
 });
 
+// types ====
+export type RaceStatus = 'idle' | 'countdown' | 'racing';
+
 type RaceData = {
   position: THREE.Vector3;
   progress: number;
@@ -77,6 +80,8 @@ type GameState = {
     }
   >;
   playerPhase: 'Idle' | 'Race' | 'Finished';
+  track: THREE.Curve<THREE.Vector3>;
+  raceStatus: RaceStatus;
 };
 
 export type RacePositonsType = { id: number; position: THREE.Vector3 };
@@ -97,6 +102,8 @@ type GameActions = {
   updateProgresses: (positions: RaceProgressesType[]) => void;
   updateLastProgresses: (progresses: Record<number, number>[]) => void;
   setPlayerPhase: (state: PlayerPhaseType) => void;
+  setTrack: (track: THREE.Curve<THREE.Vector3>) => void;
+  setRaceStatus: (status: RaceStatus) => void;
 };
 
 type GameStore = GameState & GameActions;
@@ -121,8 +128,22 @@ export const useGameStore = create(
     playerId: -1,
     raceData: {},
     playerPhase: 'Idle',
+    track: new THREE.CatmullRomCurve3(
+      [
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(50, 0, 0),
+        new THREE.Vector3(50, 50, 0),
+        new THREE.Vector3(50, 50, 100),
+        new THREE.Vector3(50, 0, 100),
+        new THREE.Vector3(0, 0, 100),
+      ],
+      true,
+    ),
+    raceStatus: 'idle',
 
     // --- Actions
+    setRaceStatus: (status) => set({ raceStatus: status }),
+    setTrack: (index: THREE.Curve<THREE.Vector3>) => set({ track: index }),
     setPlayerPhase: (phase: PlayerPhaseType) => set({ playerPhase: phase }),
     setPlayerId: (id) => set({ playerId: id }),
 

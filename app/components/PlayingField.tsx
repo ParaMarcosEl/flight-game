@@ -3,7 +3,6 @@
 import React, { useMemo, forwardRef, useRef } from 'react';
 import { Line, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
-import { curve } from '../lib/flightPath';
 import { TUBE_RADIUS } from '../constants';
 import { computeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 import { useCheckpointController } from '../controllers/CheckPointController';
@@ -17,12 +16,14 @@ const PlayingField = forwardRef<
   THREE.Mesh,
   {
     aircraftRef: React.RefObject<THREE.Object3D>;
+    curve: THREE.Curve<THREE.Vector3>;
     onLapComplete?: () => void;
   }
 >(
   (
     {
       aircraftRef,
+      curve,
       // onLapComplete,
     },
     ref,

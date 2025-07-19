@@ -3,13 +3,13 @@ import Link from 'next/link';
 import { useGameStore } from '../../controllers/GameController';
 import { formatTime } from '../../utils';
 import { useRaceStandings } from '../../controllers/useRaceStandings';
-import { curve } from '../../lib/flightPath';
 
 type stylesType = Record<string, CSSProperties>;
 
 export function RaceOver() {
   const { finished, raceOver } = useRaceStandings();
   const reset = useGameStore((s) => s.reset);
+  const curve = useGameStore((s) => s.track);
   const setRacePosition = useGameStore((s) => s.setRacePosition);
   const playerId = useGameStore.getState().playerId;
   const player = finished.find(({ id }) => id === playerId);

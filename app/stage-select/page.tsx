@@ -40,8 +40,14 @@ export default function StageSelect() {
         <h1 style={styles.heading}> Select Stage</h1>
 
         <div>
-          <Link href="/stage" style={styles.link}>
+          <Link href="/stages/stage1" style={styles.link}>
             Stage 1
+          </Link>
+          <Link href="/stages/stage2" style={styles.link}>
+            Stage 2
+          </Link>
+          <Link href="/stages/stage3" style={styles.link}>
+            Stage 3
           </Link>
           {/* Add more stages here if needed */}
         </div>

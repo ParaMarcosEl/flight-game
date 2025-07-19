@@ -2,20 +2,25 @@ import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { useEffect, useMemo } from 'react';
 
-export function Skybox() {
+type SkyboxPropsType = {
+  stageName?: string;
+};
+
+export function Skybox({ stageName = 'stageA' }: SkyboxPropsType) {
   const { scene } = useThree();
 
   const skyboxTexture = useMemo(() => {
     const loader = new THREE.CubeTextureLoader();
+    console.log(`/textures/${stageName}/right.png`);
     return loader.load([
-      '/textures/skybox2/right.png', // +X
-      '/textures/skybox2/left.png', // -X
-      '/textures/skybox2/top.png', // +Y
-      '/textures/skybox2/bottom.png', // -Y
-      '/textures/skybox2/front.png', // +Z
-      '/textures/skybox2/back.png', // -Z
+      `/textures/${stageName}/right.png`, // +X
+      `/textures/${stageName}/left.png`, // -X
+      `/textures/${stageName}/top.png`, // +Y
+      `/textures/${stageName}/bottom.png`, // -Y
+      `/textures/${stageName}/front.png`, // +Z
+      `/textures/${stageName}/back.png`, // -Z
     ]);
-  }, []);
+  }, [stageName]);
 
   useEffect(() => {
     scene.background = skyboxTexture;

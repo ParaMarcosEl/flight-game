@@ -7,6 +7,7 @@ import { useFrame } from '@react-three/fiber';
 import { RaceState } from './RaceState';
 import { useGLTF } from '@react-three/drei';
 import { SHIP_SCALE } from '../../constants';
+import { useGameStore } from '../../controllers/GameController';
 
 type BotCraftProps = {
   startPosition: THREE.Vector3;
@@ -19,7 +20,8 @@ const BotCraft = forwardRef<THREE.Object3D, BotCraftProps>(
   ({ startPosition, startQuaternion, speed = 0.0005, curve }, ref) => {
     const botRef = useRef<THREE.Group>(null);
     const raceStateRef = useRef<RaceState | null>(null);
-
+    const raceStatus = useGameStore((s) => s.raceStatus);
+    const controlsEnabled = raceStatus === 'racing';
     // Load the GLTF model once
     const { scene } = useGLTF('/models/botship.glb');
 
@@ -40,11 +42,11 @@ const BotCraft = forwardRef<THREE.Object3D, BotCraftProps>(
     // Initialize RaceState once
     useEffect(() => {
       if (botRef.current) {
-        const raceState = new RaceState(botRef.current, curve);
+        const raceState = new RaceState(botRef.current, curve, controlsEnabled);
         raceState.speed = speed;
         raceStateRef.current = raceState;
       }
-    }, [speed, curve]); // Add curve to dependencies if RaceState depends on it
+    }, [speed, curve, controlsEnabled]); // Add curve to dependencies if RaceState depends on it
 
     // Imperative handle for external ref access
     useImperativeHandle(ref, () => botRef.current as THREE.Object3D, []);

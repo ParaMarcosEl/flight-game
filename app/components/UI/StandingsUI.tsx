@@ -13,7 +13,7 @@ export function StandingsUI() {
           position: 'absolute',
           top: 20,
           right: 20,
-          background: '#000a',
+          background: 'rgba(0,0,0,0)',
           padding: 10,
           color: 'white',
           fontFamily: 'monospace',
