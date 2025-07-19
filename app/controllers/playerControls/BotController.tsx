@@ -2,7 +2,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
 import * as THREE from 'three';
-import { BOT_SPEED } from '../constants';
+import { BOT_SPEED } from '../../constants';
 
 type BotControllerProps = {
   botRef: React.RefObject<THREE.Object3D>;
