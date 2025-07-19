@@ -8,14 +8,21 @@ export class RaceState implements BaseState {
   curve: THREE.Curve<THREE.Vector3>;
   t = 0;
   speed = 0.0005;
+  controlsEnabled = false;
 
   private time = 0;
   private noiseAmplitude = 0;
   private noiseFrequency = 1;
 
-  constructor(bot: THREE.Object3D, curve: THREE.Curve<THREE.Vector3>, _speed?: number) {
+  constructor(
+    bot: THREE.Object3D,
+    curve: THREE.Curve<THREE.Vector3>,
+    controlsEnabled: boolean,
+    _speed?: number,
+  ) {
     this.bot = bot;
     this.curve = curve;
+    this.controlsEnabled = controlsEnabled;
     if (_speed) this.speed = _speed;
   }
 
@@ -36,6 +43,7 @@ export class RaceState implements BaseState {
   handleTrigger(other: THREE.Object3D): void {}
 
   handleUpdate(delta: number): void {
+    if (!this.controlsEnabled) return;
     this.time += delta;
     this.t = (this.t + this.speed) % 1;
 

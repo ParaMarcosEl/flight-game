@@ -3,7 +3,7 @@ import * as THREE from 'three';
 // curve
 export const NUM_POINTS = 32; // Number of control points
 export const LAP_RADIUS = 400; // Approximate size of loop
-export const HEIGHT_VARIATION = 100; // Max vertical offset
+export const HEIGHT_VARIATION = 50; // Max vertical offset
 export const SEED = Math.random() * Date.now();
 export const TUBE_RADIUS = 30;
 
@@ -39,3 +39,5 @@ export type SvgMapOptions = {
   strokeWidth: number;
   backgroundColor: string;
 };
+
+export type curveType = THREE.Curve<THREE.Vector3>;

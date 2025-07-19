@@ -2,7 +2,7 @@
 
 import { useGLTF } from '@react-three/drei';
 import { useEffect, useRef } from 'react';
-import { usePlayerController } from '../../controllers/PlayerController';
+import { usePlayerController } from '../../controllers/playerControls/PlayerController';
 import * as THREE from 'three';
 import { SHIP_SCALE } from '../../constants';
 import { RaceState } from './RaceState';
@@ -68,7 +68,7 @@ export default function Aircraft({
 
       if (!aircraftRef.current) return;
 
-      if (playerPhase === 'Finished') setState(new FinishedState(aircraftRef.current, curve));
+      if (playerPhase === 'Finished') setState(new FinishedState(aircraftRef.current, curve, true));
       if (playerPhase === 'Race') setState(new RaceState());
     }
   });

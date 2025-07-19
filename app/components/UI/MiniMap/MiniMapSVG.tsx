@@ -27,7 +27,7 @@ export default function MiniMapSvg({
   numSegments = 100,
   strokeColor = 'blue',
   strokeWidth = 2,
-  backgroundColor = 'transparent',
+  backgroundColor = 'rgba(0, 0, 0, 0)',
 }: MiniMapSvgProps) {
   const points = useMemo(() => curve.getPoints(numSegments), [curve, numSegments]);
 
