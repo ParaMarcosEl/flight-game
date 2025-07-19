@@ -68,7 +68,7 @@ export default function Aircraft({
 
       if (!aircraftRef.current) return;
 
-      if (playerPhase === 'Finished') setState(new FinishedState(aircraftRef.current, curve));
+      if (playerPhase === 'Finished') setState(new FinishedState(aircraftRef.current, curve, true));
       if (playerPhase === 'Race') setState(new RaceState());
     }
   });
